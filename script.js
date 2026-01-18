@@ -159,28 +159,29 @@ function generate(data) {
     var barY;
     var sin48=Math.sin(Math.PI/180*48);
     var cos48=1-sin48;
+    var flt='Frutiger LT 55 Roman.ttf';
     {
         draw.rect(data.a_width, data.height).fill('#fff').stroke({width:1,color:'#000'});
         y+=draw.text(data.stations[data.selected].name[0]).font({family:'微软雅黑',size:24,anchor:'middle'}).center(x,y).bbox().height-10;
-        data.stations[data.selected].name[1].split('\n').forEach(text=>{y+=draw.text(text).font({family:'Frutiger LT 55 Roman.ttf',size:13,anchor:'middle'}).center(x,y).bbox().height-5;});
+        data.stations[data.selected].name[1].split('\n').forEach(text=>{y+=draw.text(text).font({family:flt,size:13,anchor:'middle'}).center(x,y).bbox().height-5;});
         draw.rect(data.a_width-data.margin,8).center(x,y+10).fill(data.color).radius(4);
         barY=y+10;
         draw.rect(50, 20).center(x,y+10).fill('#fff').radius(10).stroke({width:1,color:data.color});
         draw.path([['M',x,y],['L',x,y+20]]).stroke({width:1,color:data.color});
-        var t=draw.text(data.name[2]).font({family:'Frutiger LT 55 Roman.ttf',size:13,anchor:'middle',fill:data.color});
+        var t=draw.text(data.name[2]).font({family:flt,size:13,anchor:'middle',fill:data.color});
         t.center(x-t.bbox().width*0.8,y+8.5)
-        t=draw.text(data.stations[data.selected].id).font({family:'Frutiger LT 55 Roman.ttf',size:13,anchor:'middle',fill:data.color});
+        t=draw.text(data.stations[data.selected].id).font({family:flt,size:13,anchor:'middle',fill:data.color});
         t.center(x+t.bbox().width*0.8,y+8.5);
         var end_sta = stations[0];
         if(data.to_left){end_sta=stations[stations.length-1];}
         var oy=y;
-        x=data.left_door?data.margin/2+5:data.a_width-(data.margin/5+2);
+        x=data.left_door?data.margin/2+5:data.a_width-(data.margin/2+5);
         y-=12;
         var way=data.left_door?'left':'right';
         var u=data.left_door?1:-1;
         var y_l=y;
         var last_height;
-        (data.stations[data.stations[data.selected][data.to_left?'next':'back']]?"To "+end_sta.name[1]:"The Terminal Station").split('\n').reverse().forEach(text=>{y-=(last_height=textalign(draw.text(text).font({family:'Frutiger LT 55 Roman.ttf',size:11,anchor:'left'}),x,y,way).bbox().height)-3;});
+        (data.stations[data.stations[data.selected][data.to_left?'next':'back']]?"To "+end_sta.name[1]:"The Terminal Station").split('\n').reverse().forEach(text=>{y-=(last_height=textalign(draw.text(text).font({family:flt,size:11,anchor:'left'}),x,y,way).bbox().height)-3;});
         y-=5;
         textalign(draw.text(data.stations[data.stations[data.selected][data.to_left?'next':'back']]?end_sta.name[0]+"方向":"终点站").font({family:'微软雅黑',size:16,anchor:'left'}),x,y,way).bbox().height;
         y=y_l-last_height-5;
@@ -189,7 +190,7 @@ function generate(data) {
             var way2=data.left_door?'right':'left';
             var oy1=y;
             var r=draw.rect(150, 20).fill(data.color);
-            var b1=textalign(draw.text(data.name[1]).font({family:'Frutiger LT 55 Roman.ttf',size:15,anchor:'left',fill:"#fff"}),data.left_door?data.a_width-margin:margin,y+5,way2);
+            var b1=textalign(draw.text(data.name[1]).font({family:flt,size:15,anchor:'left',fill:"#fff"}),data.left_door?data.a_width-margin:margin,y+5,way2);
             y-=b1.bbox().height+2;
             var b2=textalign(draw.text(data.name[0]).font({family:'微软雅黑',size:20,anchor:'left',fill:"#fff"}),data.left_door?data.a_width-margin:margin,y+5,way2)
             var t=Math.abs(b1.bbox().width-b2.bbox().width);
@@ -205,7 +206,7 @@ function generate(data) {
             x+=u*(textalign(draw.polygon([[10.92*u,0],[17.96*u,0],[8.87*u,9.55],[28.43*u,9.55],[28.43*u,15.01],[9.78*u,15.01],[18.65*u,23.42],[11.14*u,23.42],[0,11.71]]),x,y,way).bbox().width + 5);
             y-=3;
             y+=textalign(draw.text("下一站："+data.stations[next_station(data.selected,data.to_left)].name[0]).font({family:'微软雅黑',size:14,anchor:'left'}),x,y,way).bbox().height;
-            textalign(draw.text("Next Station: "+data.stations[next_station(data.selected,data.to_left)].name[1]).font({family:'Frutiger LT 55 Roman.ttf',size:9,anchor:'left'}),x,y,way);
+            textalign(draw.text("Next Station: "+data.stations[next_station(data.selected,data.to_left)].name[1]).font({family:flt,size:9,anchor:'left'}),x,y,way);
         }
     }
     {
@@ -217,7 +218,7 @@ function generate(data) {
         stations.every(function(item){if(item.interchange){interchange_color=item.interchange[0][1]};return interchange_color==null;});
         if(interchange_color!=null){
             var _y=data.height-data.margin/2;
-            _y-=draw.text("Transfer Station").font({family:'Frutiger LT 55 Roman.ttf',size:4,anchor:'middle'}).move(data.a_width+data.margin/2+5,_y).bbox().height+3;
+            _y-=draw.text("Transfer Station").font({family:flt,size:4,anchor:'middle'}).move(data.a_width+data.margin/2+5,_y).bbox().height+3;
             draw.text("换乘站").font({family:'微软雅黑',size:7,anchor:'middle'}).move(data.a_width+data.margin/2+5,_y).bbox().height-10;
             interchange2(draw,data.a_width+data.margin/2,_y,[data.color,interchange_color],'right');
         }
@@ -229,10 +230,10 @@ function generate(data) {
             // console.log(pass,i.name[0]);
             draw.rect(15, 6).center(x+15,y).fill('#fff').radius(3).stroke({width:0.5,color:data.color});
             draw.path([['M',x+15,y-3],['L',x+15,y+3]]).stroke({width:0.5,color:data.color});
-            textalign(draw.text(data.name[2]).font({family:'Frutiger LT 55 Roman.ttf',size:4,anchor:'middle',fill:data.color}),x+13.5,y-3,'right');
-            textalign(draw.text(i.id).font({family:'Frutiger LT 55 Roman.ttf',size:4,anchor:'middle',fill:data.color}),x+16.5,y-3,'left');
+            textalign(draw.text(data.name[2]).font({family:flt,size:4,anchor:'middle',fill:data.color}),x+13.5,y-3,'right');
+            textalign(draw.text(i.id).font({family:flt,size:4,anchor:'middle',fill:data.color}),x+16.5,y-3,'left');
             if(i.key==data.selected&&data.new) textalign(draw.path('M42.32,15.83c3.94-3.58,4-9.78,0.32-13.34c-3.56-3.45-9.52-3.33-13.03,0.43C19.74,14.05,9.87,25.17,0,36.3c7.68,0.04,15.35,0.08,23.03,0.11C29.46,29.55,35.89,22.69,42.32,15.83z'),x-4,y-3.5,'left','bottom').fill(data.color);
-            var b1=textalign(draw.text(i.name[1]).font({family:'Frutiger LT 55 Roman.ttf',size:4,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))}),x+18,y-5,'left','bottom').rotate(-48,x+18,y-5);
+            var b1=textalign(draw.text(i.name[1]).font({family:flt,size:4,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))}),x+18,y-5,'left','bottom').rotate(-48,x+18,y-5);
             var h=b1.bbox().height;
             textalign(draw.text(i.name[0]).font({family:'微软雅黑',size:7,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))}),x+18-sin48*h,y-7-cos48*h,'left','bottom').rotate(-48,x+18-sin48*h,y-7-cos48*h);
             if(i.interchange){
@@ -241,7 +242,7 @@ function generate(data) {
                 i.interchange.forEach(j=>{
                     y_+=14;
                     draw.rect(12,12).center(x+15,y_).radius(6).fill(j[1]);
-                    draw.text(j[0]).font({family:'Frutiger LT 55 Roman.ttf',size:7,anchor:'middle',fill:"#fff"}).center(x+15,y_-0.5);
+                    draw.text(j[0]).font({family:flt,size:7,anchor:'middle',fill:"#fff"}).center(x+15,y_-0.5);
                 })
             }
             if(!data.left_door&&i.key!=data.selected)pass=!pass;

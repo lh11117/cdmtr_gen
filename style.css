@@ -1,4 +1,46 @@
 body{
     margin:0;
-    padding: 0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+}
+
+#draw{
+    width:100%;
+    overflow-x:auto;
+    margin:0;
+    padding:0;
+}
+
+#top>h3{
+    margin:5px;
+    padding:0;
+    flex-grow:1;
+    color:#fff;
+}
+
+#top{
+    display:flex;
+    align-items:center;
+    padding:5px;
+    background-color:rgb(35, 87, 87)
+}
+
+#top>.item{
+    justify-content:flex-end;
+    margin:5px;
+    padding:5px;
+    background-color:cyan;
+    border-radius:15px;
+    transition:all 0.3s;
+}
+
+#top>.item:hover{
+    background-color:rgb(37, 185, 185);
+    border-radius:5px;
+    cursor:pointer;
+}
+
+#main{
+    flex-grow:1;
 }
