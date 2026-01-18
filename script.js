@@ -40,7 +40,7 @@ data = {
             name: ["西博城", "Western China Iat'l Expo City"],
             back: ['e'],
             next: ["g"],
-            interchange:[['1','#222A8C'],['9','#BE7331']],
+            interchange:[['1','#222A8C'],['6','#BE7331']],
             id: "10"
         },
         "g": {
@@ -113,14 +113,35 @@ function interchange3(draw,x,y,color,ali='middle'){
     var b1=draw.path('M4.56,15.44H4.17c-2.16,0-3.92-1.75-3.92-3.92V4.17C0.25,2,2,0.25,4.17,0.25h0.39c2.16,0,3.92,1.75,3.92,3.92v7.35C8.48,13.69,6.72,15.44,4.56,15.44z').stroke({width:0.75,color:color[0]}).fill("#fff");
     x-=b1.bbox().width*(ali=="right"?0:1)/(ali=='middle'?2:1);
     textalign(b1,x+3,y,'right');
-    textalign(draw.path('M2.26,8.38V3.89C2.6,2.89,3.54,2.21,4.57,2.2c1.11-0.01,2.1,0.77,2.39,1.87'),x+1.25,y+2,'right').stroke({width:0.75,color:color[1]}).fill("#ffffff00");
-    textalign(draw.polygon([[1.17,8.34],[3.36,8.34],[2.26,10.52]]),x-2.35,y+8,'right').fill(color[1]);
-    textalign(draw.path('M6.78,7.15v4.14c-0.09,1.25-1.13,2.23-2.38,2.25c-1.24,0.02-2.31-0.93-2.44-2.17'),x+1.25,y+7,'right').stroke({width:0.75,color:color[0]}).fill("#ffffff00");
-    textalign(draw.polygon([[7.87,7.15],[5.68,7.15],[6.78,4.96]]),x+2.35,y+5,'right').fill(color[0]);
+    textalign(draw.path('M6.57,6.93c0-0.82,0.01-1.64,0.01-2.47c-0.01-0.2-0.07-0.67-0.41-1.11c-0.23-0.31-0.53-0.49-0.6-0.53C5.38,2.7,5.2,2.64,5.07,2.6'),x+1.25,y+2,'right').stroke({width:0.75,color:color[1]}).fill("#ffffff00");
+    textalign(draw.polygon([[3.4,2.33],[5.56,1.6],[5.34,3.6]]),x-0.05,y+1,'right').fill(color[1]);
+    textalign(draw.path('M2.76,2.57c-0.1,0.1-0.26,0.27-0.38,0.52C2.24,3.37,2.22,3.63,2.21,3.77v5.15'),x-2.85,y+2.5,'right').stroke({width:0.75,color:color[2]}).fill("#ffffff00");
+    textalign(draw.polygon([[1.05,8.92],[3.38,8.92],[2.21,11.02]]),x-2.15,y+8.5,'right').fill(color[2]);
+    textalign(draw.path('M2.15,11.7c0.06,1.23,1.11,2.19,2.3,2.14c1.15-0.04,2.09-1,2.13-2.18V9.92'),x+1,y+9.5,'right').stroke({width:0.75,color:color[0]}).fill("#ffffff00");
+    textalign(draw.polygon([[5.28,9.92],[7.81,9.92],[6.55,7.54]]),x+2.25,y+7.5,'right').fill(color[0]);
     return b1.bbox().height;
 }
+function svg2png(svgText,w,h,s=1,name='export') {
+    const img=new Image();
+    img.src=`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgText)}`;
+    img.onload=()=>{
+        const canvas=document.createElement('canvas');
+        const ctx=canvas.getContext('2d');
+        const dpr=s;
+        canvas.width=w*dpr;
+        canvas.height=h*dpr;
+        ctx.scale(dpr,dpr);
+        ctx.drawImage(img,0,0);
+        const url=canvas.toDataURL(`image/png`);
+        const a=document.createElement('a');
+        a.href=url;
+        a.download=name+'.png';
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+}
 function generate(data) {
-    var x=document.getElementById("x");  // svg
+    document.querySelector("#draw").innerHTML='';
     stations=[];
     var next=data.start;
     var num=0;
@@ -189,8 +210,6 @@ function generate(data) {
     }
     {
         draw.rect(data.b_width, data.height).fill('#fff').stroke({width:1,color:'#000'}).move(data.a_width,0);
-        document.querySelector("#draw>svg").style.width=(data.a_width+data.b_width)+'px';
-        document.querySelector("#draw>svg").style.height=(data.height)+'px';
         x=data.a_width+data.b_width/2,y=barY;
         draw.rect(data.b_width-data.margin,8).center(x,y).fill(data.color).radius(4);
         var interchange_color=null;
@@ -207,7 +226,7 @@ function generate(data) {
         stations.forEach(i=>{
             if(!data.left_door&&i.key!=data.selected)pass=!pass;
             var y_=y;
-            console.log(pass,i.name[0]);
+            // console.log(pass,i.name[0]);
             draw.rect(15, 6).center(x+15,y).fill('#fff').radius(3).stroke({width:0.5,color:data.color});
             draw.path([['M',x+15,y-3],['L',x+15,y+3]]).stroke({width:0.5,color:data.color});
             textalign(draw.text(data.name[2]).font({family:'Frutiger LT 55 Roman.ttf',size:4,anchor:'middle',fill:data.color}),x+13.5,y-3,'right');
@@ -217,7 +236,7 @@ function generate(data) {
             var h=b1.bbox().height;
             textalign(draw.text(i.name[0]).font({family:'微软雅黑',size:7,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))}),x+18-sin48*h,y-7-cos48*h,'left','bottom').rotate(-48,x+18-sin48*h,y-7-cos48*h);
             if(i.interchange){
-                if(i.interchange.length==2)y_+=interchange2(draw,x+16.25,y+6,[data.color,i.interchange[0][1]],'right');
+                if(i.interchange.length==1)y_+=interchange2(draw,x+16.25,y+6,[data.color,i.interchange[0][1]],'right');
                 else y_+=interchange3(draw,x+16.25,y+6,[data.color,i.interchange[0][1],i.interchange[1][1]],'right');
                 i.interchange.forEach(j=>{
                     y_+=14;
@@ -230,34 +249,11 @@ function generate(data) {
             x+=(data.b_width-data.margin-30)/(stations.length-1);
         });
     }
+    document.querySelector("#draw>svg").style.width=(data.a_width+data.b_width)+'px';
+    document.querySelector("#draw>svg").style.height=(data.height)+'px';
+    // svg2png(document.querySelector("#draw").innerHTML,data.a_width+data.b_width,data.height,20,data.name[0].replace(' ','_')+'_导出');
 }
 
-/*
-<!-- Generator: Adobe Illustrator 24.0.2, SVG Export Plug-In  -->
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="8.73px"
-	 height="15.69px" viewBox="0 0 8.73 15.69" style="enable-background:new 0 0 8.73 15.69;" xml:space="preserve">
-<style type="text/css">
-	.st0{fill:#FFFFFF;stroke:#00A0E9;stroke-width:0.5;stroke-miterlimit:10;}
-	.st1{fill:none;stroke:#C30D23;stroke-width:0.5;stroke-miterlimit:10;}
-	.st2{fill:#C30D23;}
-	.st3{fill:none;stroke:#13AE67;stroke-width:0.5;stroke-miterlimit:10;}
-	.st4{fill:#13AE67;}
-	.st5{fill:none;stroke:#00A0E9;stroke-width:0.5;stroke-miterlimit:10;}
-	.st6{fill:#2EA7E0;}
-</style>
-<defs>
-</defs>
-<path class="st0" d="M4.56,15.44H4.17c-2.16,0-3.92-1.75-3.92-3.92V4.17C0.25,2,2,0.25,4.17,0.25h0.39c2.16,0,3.92,1.75,3.92,3.92
-	v7.35C8.48,13.69,6.72,15.44,4.56,15.44z"/>
-<path class="st1" d="M6.57,6.93c0-0.82,0.01-1.64,0.01-2.47c-0.01-0.2-0.07-0.67-0.41-1.11c-0.23-0.31-0.53-0.49-0.6-0.53
-	C5.38,2.7,5.2,2.64,5.07,2.6"/>
-<polygon class="st2" points="3.4,2.33 5.56,1.6 5.34,3.6 "/>
-<path class="st3" d="M2.76,2.57c-0.1,0.1-0.26,0.27-0.38,0.52C2.24,3.37,2.22,3.63,2.21,3.77v5.15"/>
-<polygon class="st4" points="1.05,8.92 3.38,8.92 2.21,11.02 "/>
-<path class="st5" d="M2.15,11.7c0.06,1.23,1.11,2.19,2.3,2.14c1.15-0.04,2.09-1,2.13-2.18V9.92"/>
-<polygon class="st6" points="5.28,9.92 7.81,9.92 6.55,7.54 "/>
-</svg>
-*/
+
 
 generate(data);
-
