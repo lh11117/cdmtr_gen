@@ -8,6 +8,56 @@ document.querySelector(".style.btn").addEventListener("click",()=>{
     document.querySelector("#inner2").classList.remove("show");
 });
 
+function new_file(){
+    data = {
+        name: ["2号线", "Line 2", "02"],
+        color: "#EB5A35",
+        stations: {},
+        to_left: true,
+        left_door: false,
+        a_width: 600,
+        height: 200,
+        b_width: 600,
+        a_top: 60,
+        margin: 70,
+        scale: 2,
+        new: false
+    };
+    var s1=generate_randstr(),s2=generate_randstr();
+    data.start=s1;
+    data.end=s2;
+    data.stations[s1]={name:[s1,s1],next:[s2],id:"01"};
+    data.stations[s2]={name:[s2,s2],back:[s1],id:"02"};
+    data.selected=s1;
+}
+
+new_file();
+
+document.querySelector('.btn.new').addEventListener('click',()=>{
+    if(confirm("警告: 确定要新建项目吗? 如果您没有下载当前项目的JSON配置文件(并非图片), 当前项目可能会丢失")){
+        new_file();
+        load(data);
+    }
+});
+
+document.querySelector('.btn.import').addEventListener('click',()=>{
+    if(confirm("警告: 确定要导入项目吗? 如果您没有下载当前项目的JSON配置文件(并非图片), 当前项目可能会丢失")){
+        const input=document.createElement('input');
+        input.type='file';
+        input.accept='.json,application/json';
+        input.onchange=async()=>{
+            const file=input.files[0];
+            if(!file)return;
+            if(file.type!=='application/json'&&!file.name.toLowerCase().endsWith('.json')){alert('请选择 JSON 文件');return;}
+            const text=await file.text();
+            data=JSON.parse(text);
+            update(data);
+        };
+        input.click();
+    }
+});
+
+
 function new_sta(){
     document.getElementById('stas-choose').innerHTML='<option value="__start">开头</option><option value="__end" selected>末尾</option>';
     var stations=loads(data);
