@@ -33,7 +33,7 @@
               </table>
             </div>
         </div>
-        <div id="style" class="show">
+        <div id="style" class="">
           <div class="topbar">
             <span class="a">项目风格设置</span>
             <span class="b">×</span>
@@ -50,7 +50,20 @@
             <label>线路名称(中文):</label><input type="text" id="name0"><br>
             <label>线路名称(英文):</label><input type="text" id="name1"><br>
             <label>线路编号:</label><input type="text" id="name2"><br>
-            <label>线路颜色:</label><input type="color" id="color"><br>
+            <label>线路颜色:</label><input type="color" id="color">
+          </div>
+          <div id="inner2">
+            <label>索引(不可变):</label><label id="key"></label><br>
+            <label>站名(中文):</label><input type="text" id="zh_name"><br>
+            <label>站名(英文):</label><input type="text" id="en_name"><br>
+            <label>编号:</label><input type="text" id="number"><br>
+            <label>未开通:</label><input type="checkbox" id="serve"><br>
+            <label>换乘:</label><div id="interchange"></div><br>
+            <div style="display:flex;">
+              <div class="btn" id="new_interchange">新增换乘</div>
+              <div class="btn" id="set_now">设为当前</div>
+              <div class="btn" id="dele">删除</div>
+            </div>
           </div>
         </div>
     </div>

@@ -55,21 +55,29 @@ html{
 }
 
 #style{
-    width:0;
     height:100%;
     transition:width 0.3s;
     border:solid 1px #000;
     flex-direction:column;
     display:none;
-
+    position:fixed;
+    top:0;
+    right:0;
+    background-color:#fff;
 }
 
-#style>#inner{
+#style>#inner,#style>#inner2{
     flex-grow:1;
+    display:none;
+}
+
+#style>#inner.show,#style>#inner2.show{
+    display:block;
 }
 
 #style.show{
-    width:600px;
+    max-width:100%;
+    width:400px;
     display:flex;
 }
 

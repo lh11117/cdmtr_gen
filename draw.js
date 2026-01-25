@@ -159,6 +159,7 @@ function loads(data){
     return stations;
 }
 function generate(data) {
+    var scroll=document.querySelector("#draw").scrollLeft;
     var stations=loads(data);
     document.querySelector("#draw").innerHTML='';
     var x=data.a_width/2,y=data.a_top;
@@ -285,5 +286,6 @@ function generate(data) {
     }
     document.querySelector("#draw>svg").style.width=(data.a_width+data.b_width)*data.scale+'px';
     document.querySelector("#draw>svg").style.height=(data.height)*data.scale+'px';
+    document.querySelector("#draw").scrollLeft=scroll;
     // svg2png(document.querySelector("#draw").innerHTML,(data.a_width+data.b_width)*data.scale,data.height*data.scale,1,data.name[0].replace(' ','_')+'_导出');
 }

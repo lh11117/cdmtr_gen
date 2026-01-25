@@ -4,6 +4,8 @@ document.querySelector("#style>.topbar>.b").addEventListener("click",()=>{
 
 document.querySelector(".style.btn").addEventListener("click",()=>{
     document.querySelector("#style").classList.add("show");
+    document.querySelector("#inner").classList.add("show");
+    document.querySelector("#inner2").classList.remove("show");
 });
 
 function new_sta(){
@@ -53,11 +55,129 @@ function close_new_sta(){
     document.getElementById('new_sta').classList.add('hide');
 }
 
+function moveDown(arr,index) {
+  if(index<0||index>=arr.length-1)return arr;
+  [arr[index],arr[index+1]]=[arr[index + 1],arr[index]];
+  return arr;
+}
+
+function load_sta(elem){
+    document.querySelector("#style").classList.add("show");
+    document.querySelector("#inner2").classList.add("show");
+    document.querySelector("#inner").classList.remove("show");
+    document.querySelector("#key").innerText=elem.key;
+    document.querySelector("#zh_name").value=elem.name[0];
+    document.querySelector("#en_name").value=elem.name[1];
+    document.querySelector("#number").value=elem.id;
+    document.querySelector("#serve").checked=elem.no_serve?true:false;
+    document.querySelector("#interchange").innerHTML='';
+    {
+        document.querySelector("#zh_name").oninput=(e)=>{
+            data.stations[elem.key].name[0]=e.srcElement.value;
+            update();
+        }
+        document.querySelector("#en_name").oninput=(e)=>{
+            data.stations[elem.key].name[1]=e.srcElement.value;
+            update();
+        }
+        document.querySelector("#number").oninput=(e)=>{
+            data.stations[elem.key].id=e.srcElement.value;
+            update();
+        }
+        document.querySelector("#serve").oninput=(e)=>{
+            data.stations[elem.key].no_serve=e.srcElement.checked;
+            update();
+        }
+    }
+    document.getElementById("new_interchange").onclick=()=>{
+        if(!data.stations[elem.key].interchange){data.stations[elem.key].interchange=[];}
+        data.stations[elem.key].interchange.push(['1','#000']);
+        load_sta(elem);
+        update();
+    }
+    document.getElementById("set_now").onclick=()=>{
+        data.selected=elem.key;
+        update();
+    }
+    document.getElementById("dele").onclick=()=>{
+        if(confirm("是否要删除车站“"+elem.name[0]+"("+elem.name[1]+")”?这删除后无法撤销!")){
+            if(elem.key==data.start){
+                data.start=data.stations[elem.key].next;
+                delete data.stations[data.stations[elem.key].next].back;
+            }else if(elem.key==data.end){
+                data.end=data.stations[elem.key].back;
+                delete data.stations[data.stations[elem.key].back].next;
+            }else{
+                data.stations[data.stations[elem.key].back].next=data.stations[elem.key].next;
+                data.stations[data.stations[elem.key].next].back=data.stations[elem.key].back;
+            }
+        }
+        update();
+    }
+    if(elem.interchange){
+        var i=0;
+        elem.interchange.forEach(e=>{
+            const j=i++;
+            var div=document.createElement('div');
+            div.style.display='flex';
+            div.style.alignItems='center';
+            var inp=document.createElement('input');
+            inp.oninput=(e)=>{
+                data.stations[elem.key].interchange[j][0]=e.srcElement.value;
+                update();
+            }
+            inp.value=e[0];
+            var col=document.createElement('input');
+            col.oninput=(e)=>{
+                data.stations[elem.key].interchange[j][1]=e.srcElement.value;
+                update();
+            }
+            col.type='color';
+            col.value=e[1];
+            var div2=document.createElement('div');
+            div2.classList.add('btn');
+            div2.innerText='删除换乘';
+            div2.onclick=()=>{
+                console.log(data.stations[elem.key].interchange);
+                if(confirm("是否要删除车站“"+elem.name[0]+"("+elem.name[1]+")”的"+e[0]+"号线换乘?")){data.stations[elem.key].interchange.splice(j,1);if(data.stations[elem.key].interchange.length==0){delete data.stations[elem.key].interchange;}load_sta(elem);update();}
+            }
+            div.appendChild(inp);
+            div.appendChild(col);
+            div.appendChild(div2);
+            if(j!=0){
+                var div3=document.createElement('div');
+                div3.onclick=()=>{
+                    data.stations[elem.key].interchange=moveDown(data.stations[elem.key].interchange,j-1);
+                    load_sta(elem);
+                    update();
+                }
+                div3.classList.add('btn');
+                div3.innerText='↑';
+                div.appendChild(div3);
+            }
+            if(j!=elem.interchange.length-1){
+                var div4=document.createElement('div');
+                div4.onclick=()=>{
+                    data.stations[elem.key].interchange=moveDown(data.stations[elem.key].interchange,j);
+                    load_sta(elem);
+                    update();
+                }
+                div4.classList.add('btn');
+                div4.innerText='↓';
+                div.appendChild(div4);
+            }
+            div.appendChild(document.createElement('br'));
+            document.querySelector("#interchange").appendChild(div);
+        });
+    }
+}
+
 function load(data){
     var ele=document.getElementById('stations');
     ele.innerHTML='';
     var stations=loads(data);
     stations.forEach(e=>{
+        const elem=e;
         var div=document.createElement('tr');
         div.classList.add('stas');
         var p1=document.createElement('td');
@@ -82,6 +202,10 @@ function load(data){
         }
         div.appendChild(p4);
         ele.appendChild(div);
+        div.style.cursor='pointer';
+        div.addEventListener("click",()=>{
+            load_sta(elem);
+        });
     });
     generate(data);
 }
@@ -109,6 +233,7 @@ function update(){
 }
 
 document.getElementById('inner').children.forEach(e=>{
+    if(e.tagName!='INPUT')return;
     e.addEventListener("input",()=>{
         data.name=[name0.value,name1.value,name2.value];
         data.color=color.value;
@@ -124,6 +249,7 @@ document.getElementById('inner').children.forEach(e=>{
     });
 });
 
+
 function downloadJSON(data,filename='data.json') {
   const jsonStr=JSON.stringify(data);
   const blob=new Blob([jsonStr],{ type:'application/json'});
@@ -138,7 +264,6 @@ function downloadJSON(data,filename='data.json') {
 document.querySelector('.btn.download').addEventListener('click',()=>{
     downloadJSON(data,data.name[0]+'_导出.json');
 });
-
 
 document.querySelector('.btn.export').addEventListener('click',()=>{
     svg2png(document.querySelector("#draw").innerHTML,(data.a_width+data.b_width)*data.scale,data.height*data.scale,1,data.name[0].replace(' ','_')+'_导出');
