@@ -113,6 +113,8 @@ function moveDown(arr,index) {
   return arr;
 }
 
+document.getElementById('btn-ok').addEventListener('click',()=>{document.getElementById('license').classList.add('hide');load(data);});
+
 function load_sta(elem){
     document.querySelector("#style").classList.add("show");
     document.querySelector("#inner2").classList.add("show");
@@ -270,7 +272,7 @@ function load(data){
     });
     generate(data);
 }
-load(data);
+
 function reset(){
     color.value=data.color;
     scale.value=data.scale;
