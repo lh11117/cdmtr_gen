@@ -3,7 +3,7 @@ var data;
 
 
 function textalign(text,x,y,way='left',ho="top"){return text.x(x-(way=="left"?0:text.bbox().width)).y(y-(ho=="top"?0:text.bbox().height));}
-function next_station(id,to_left){var xid=id;do{xid=data.stations[xid][to_left?'next':'back'][0];}while(data.stations[xid].no_serve);return xid;}
+function next_station(id,to_left){var xid=id;do{xid=data.stations[xid][to_left?'next':'back'][0];}while(data.stations[xid].no_serve&&data.stations[xid][to_left?'next':'back']);return xid;}
 function interchange2(draw,x,y,color,ali='middle'){
     var b1=draw.path('M4.56,15.44H4.17c-2.16,0-3.92-1.75-3.92-3.92V4.17C0.25,2,2,0.25,4.17,0.25h0.39c2.16,0,3.92,1.75,3.92,3.92v7.35C8.48,13.69,6.72,15.44,4.56,15.44z').stroke({width:0.75,color:color[0]}).fill("#fff");
     x-=b1.bbox().width*(ali=="right"?0:1)/(ali=='middle'?2:1);
@@ -59,6 +59,29 @@ function loads(data){
         if(++num>=1145)break;//应该没有谁家地铁有1145个站吧，这里防止死循环
     }
     return stations;
+}
+function countA(data){
+    var num=0;
+    var next=data.start;
+    while(next){
+        next=data.stations[next].next;
+        if(next)next=next[0];
+        if(++num>=1145)break;//应该没有谁家地铁有1145个站吧，这里防止死循环
+    }
+    return num;
+}
+function countB(data){
+    var num=0;
+    var cnt=0;
+    var next=data.start;
+    while(next){
+        if(++num>=1145)break;//应该没有谁家地铁有1145个站吧，这里防止死循环
+        var b=data.stations[next].no_serve;
+        next=data.stations[next].next;
+        if(next)next=next[0];
+        if(!b)cnt++;
+    }
+    return cnt;
 }
 function generate(data) {
     var scroll=document.querySelector("#draw").scrollLeft;

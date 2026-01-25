@@ -137,6 +137,9 @@ function load_sta(elem){
             update();
         }
         document.querySelector("#serve").oninput=(e)=>{
+            var c=countB(data);
+            console.log(c);
+            if(c<=2&&e.srcElement.checked){e.srcElement.checked=!e.srcElement.checked;return alert("谁家地铁全线只开一个站啊?");}
             data.stations[elem.key].no_serve=e.srcElement.checked;
             update();
         }
@@ -152,6 +155,7 @@ function load_sta(elem){
         update();
     }
     document.getElementById("dele").onclick=()=>{
+        if(countB(data)<=2){alert("无法删除车站!因为删除后启用的车站只会有一个,可能导致出现错误");return;}
         if(confirm("是否要删除车站“"+elem.name[0]+"("+elem.name[1]+")”?这删除后无法撤销!")){
             if(elem.key==data.start){
                 data.start=data.stations[elem.key].next;
@@ -163,8 +167,9 @@ function load_sta(elem){
                 data.stations[data.stations[elem.key].back].next=data.stations[elem.key].next;
                 data.stations[data.stations[elem.key].next].back=data.stations[elem.key].back;
             }
+            if(data.selected==elem.key){data.selected=data.start;}
+            update();
         }
-        update();
     }
     if(elem.interchange){
         var i=0;
