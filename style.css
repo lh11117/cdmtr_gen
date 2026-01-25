@@ -3,6 +3,11 @@ body{
     padding:0;
     display:flex;
     flex-direction:column;
+    height:100%;
+}
+
+html{
+    height:100%;
 }
 
 #draw{
@@ -26,8 +31,11 @@ body{
     background-color:rgb(35, 87, 87)
 }
 
-#top>.item{
+#top>.btn{
     justify-content:flex-end;
+}
+
+.btn{
     margin:5px;
     padding:5px;
     background-color:cyan;
@@ -35,7 +43,7 @@ body{
     transition:all 0.3s;
 }
 
-#top>.item:hover{
+.btn:hover{
     background-color:rgb(37, 185, 185);
     border-radius:5px;
     cursor:pointer;
@@ -43,4 +51,134 @@ body{
 
 #main{
     flex-grow:1;
+    display: flex;
+}
+
+#style{
+    width:0;
+    height:100%;
+    transition:width 0.3s;
+    border:solid 1px #000;
+    flex-direction:column;
+    display:none;
+
+}
+
+#style>#inner{
+    flex-grow:1;
+}
+
+#style.show{
+    width:600px;
+    display:flex;
+}
+
+#left{
+    display:flex;
+    flex-direction:column;
+    overflow: hidden;
+    flex-grow:1;
+}
+
+.topbar{
+    display:flex;
+    background-color:cadetblue;
+    color:#fff;
+}
+
+.topbar>.a{
+    flex-grow:1;
+    padding: 5px;
+}
+
+.topbar>.b{
+    padding:5px;
+    cursor:pointer;
+}
+
+.topbar>.b:hover{
+    background-color:red;
+}
+
+#stations>.stas{
+    padding:5px;
+}
+
+#stations>.stas>p{
+    margin:2px;
+}
+
+#stas-table{
+    border-collapse:collapse;
+    border:1px solid #8a8a8a;
+}
+
+th,td{
+  border:1px solid rgb(160 160 160);
+  padding:8px 10px;
+}
+
+#stas{
+    display:flex;
+    flex-direction:column;
+}
+
+#stas-top{
+    width:100%;
+}
+
+#stas-top>p:first-child{
+    flex-grow:1;
+    margin:0;
+    padding:10px;
+}
+
+#stas-top{
+    display:flex;
+    align-items:center;
+}
+
+.hover.hide{
+    display:none;
+}
+
+.hover{
+    background-color:rgba(0,0,0,0.5);
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+}
+
+.hover>.dialog>.top{
+    display:flex;
+}
+
+.hover>.dialog>.top>#dialog-text{
+    flex-grow:1;
+}
+
+.hover>.dialog{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    background-color:#fff;
+    border-radius:10px;
+    padding:10px;
+}
+
+.hover>.dialog>.body{
+    padding:10px;
+}
+
+.hover>.dialog>.end{
+    display:flex;
+    justify-content:flex-end;
+}
+.close{
+    background-color:rgb(243, 85, 85);
+    cursor:pointer;
+    padding:3px;
 }

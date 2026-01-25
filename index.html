@@ -9,14 +9,72 @@
   <body>
     <div id="top">
         <h3>成都地铁吊板生成器</h3>
-        <div class="item">导入</div>
-        <div class="item">导出</div>
-        <div class="item">风格</div>
+        <div class="btn new">新建项目</div>
+        <div class="btn download">下载项目</div>
+        <div class="btn import">导入项目</div>
+        <div class="btn export">导出图片</div>
+        <div class="btn style">风格设置</div>
     </div>
     <div id="main">
-        <div id="draw"></div>
+        <div id="left">
+            <div id="draw"></div>
+            <div id="stas">
+              <div id="stas-top"><p>车站编辑</p><div class="btn" onclick="new_sta()">添加</div></div>
+              <table id="stas-table">
+                <thead>
+                  <tr>
+                    <th>中文</th>
+                    <th>英文</th>
+                    <th>编号</th>
+                    <th>换乘</th>
+                  </tr>
+                </thead>
+                <tbody id="stations"></tbody>
+              </table>
+            </div>
+        </div>
+        <div id="style" class="show">
+          <div class="topbar">
+            <span class="a">项目风格设置</span>
+            <span class="b">×</span>
+          </div>
+          <div id="inner">
+            <label>缩放:</label><input type="number" id="scale"><br>
+            <label>左边宽度:</label><input type="number" id="a_width"><br>
+            <label>右边宽度:</label><input type="number" id="b_width"><br>
+            <label>整体高度:</label><input type="number" id="height"><br>
+            <label>左右边距:</label><input type="number" id="margin"><br>
+            <label>上面边距:</label><input type="number" id="a_top"><br>
+            <label>左边开门:</label><input type="checkbox" id="left_door"><br>
+            <label>向左行车:</label><input type="checkbox" id="to_left"><br>
+            <label>线路名称(中文):</label><input type="text" id="name0"><br>
+            <label>线路名称(英文):</label><input type="text" id="name1"><br>
+            <label>线路编号:</label><input type="text" id="name2"><br>
+            <label>线路颜色:</label><input type="color" id="color"><br>
+          </div>
+        </div>
+    </div>
+    <div class="hover hide" id="new_sta">
+      <div class="dialog">
+        <div class="top">
+          <span id="dialog-text">添加车站</span>
+          <span class="close" onclick="close_new_sta()">×</span>
+        </div>
+        <div class="body">
+          <label>选择车站添加位置:</label>
+          <select id="stas-choose">
+            <option value="__start">开头</option>
+            <option value="__end" selected>末尾</option>
+          </select>
+        </div>
+        <div class="end">
+          <div class="btn" onclick="add_sta();close_new_sta()">确定</div>
+          <div class="btn" onclick="close_new_sta()">取消</div>
+        </div>
+      </div>
     </div>
   </body>
   <script src="svg.min.js"></script>
+  <script src="draw.js"></script>
   <script src="script.js"></script>
 </html>
