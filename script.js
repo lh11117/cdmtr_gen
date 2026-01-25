@@ -229,6 +229,10 @@ function load_sta(elem){
     }
 }
 
+document.querySelector(".btn.about").addEventListener("click",()=>{
+    window.open('https://space.bilibili.com/3546630506678721');
+});
+
 function load(data){
     var ele=document.getElementById('stations');
     ele.innerHTML='';
