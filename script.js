@@ -29,6 +29,7 @@ function new_file(){
     data.stations[s1]={name:[s1,s1],next:[s2],id:"01"};
     data.stations[s2]={name:[s2,s2],back:[s1],id:"02"};
     data.selected=s1;
+    reset();
 }
 
 new_file();
@@ -52,6 +53,7 @@ document.querySelector('.btn.import').addEventListener('click',()=>{
             const text=await file.text();
             data=JSON.parse(text);
             update(data);
+            reset();
         };
         input.click();
     }
@@ -260,7 +262,7 @@ function load(data){
     generate(data);
 }
 load(data);
-{
+function reset(){
     color.value=data.color;
     scale.value=data.scale;
     a_width.value=data.a_width;
