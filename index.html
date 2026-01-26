@@ -48,6 +48,7 @@
             <label>上面边距:</label><input type="number" id="a_top"><br>
             <label>左边开门:</label><input type="checkbox" id="left_door"><br>
             <label>向左行车:</label><input type="checkbox" id="to_left"><br>
+            <label>站名、下一站、方向上色:</label><input type="checkbox" id="color_next"><br>
             <label>线路名称(中文):</label><input type="text" id="name0"><br>
             <label>线路名称(英文):</label><input type="text" id="name1"><br>
             <label>线路编号:</label><input type="text" id="name2"><br>
@@ -55,8 +56,8 @@
           </div>
           <div id="inner2">
             <label>索引(不可变):</label><label id="key"></label><br>
-            <label>站名(中文):</label><input type="text" id="zh_name"><br>
-            <label>站名(英文):</label><input type="text" id="en_name"><br>
+            <label>站名(中文):</label><textarea type="text" id="zh_name"></textarea><br>
+            <label>站名(英文):</label><textarea type="text" id="en_name"></textarea><br>
             <label>编号:</label><input type="text" id="number"><br>
             <label>未开通:</label><input type="checkbox" id="serve"><br>
             <label>换乘:</label><div id="interchange"></div><br>
@@ -79,7 +80,10 @@
           <select id="stas-choose">
             <option value="__start">开头</option>
             <option value="__end" selected>末尾</option>
-          </select>
+          </select><br>
+          <label>车站中文名:</label><textarea type="text" id="new_zh_name"></textarea><br>
+          <label>车站英文名:</label><textarea type="text" id="new_en_name"></textarea><br>
+          <label>以上内容和其他内容可以稍后更改</label>
         </div>
         <div class="end">
           <div class="btn" onclick="add_sta();close_new_sta()">确定</div>
@@ -93,7 +97,8 @@
           <h1 id="dialog-text">用前必读！</h1>
         </div>
         <div class="body">
-          本程序禁止商用！仅供车迷交流和娱乐，严禁用于商业用途！
+          本程序禁止商用！仅供车迷交流和娱乐，严禁用于商业用途！<br>
+          禁止生成违法内容！作者不会对生成的内容负责！
         </div>
         <div class="end">
           <div class="btn" id="btn-ok">我以认真阅读并同意以上内容</div>

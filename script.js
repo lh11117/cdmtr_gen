@@ -3,7 +3,7 @@ document.querySelector("#style>.topbar>.b").addEventListener("click",()=>{
 });
 
 document.querySelector(".style.btn").addEventListener("click",()=>{
-    document.querySelector("#style").classList.add("show");
+    document.querySelector("#style").classList.toggle("show");
     document.querySelector("#inner").classList.add("show");
     document.querySelector("#inner2").classList.remove("show");
 });
@@ -14,20 +14,23 @@ function new_file(){
         color: "#EB5A35",
         stations: {},
         to_left: true,
-        left_door: false,
+        left_door: true,
         a_width: 600,
         height: 200,
         b_width: 600,
-        a_top: 60,
+        a_top: 50,
         margin: 70,
         scale: 2,
-        new: false
+        new: false,
+        color_next: true
     };
+    var rand1=Math.floor(Math.random()*114514);
+    var rand2=Math.floor(Math.random()*114514);
     var s1=generate_randstr(),s2=generate_randstr();
     data.start=s1;
     data.end=s2;
-    data.stations[s1]={name:[s1,s1],next:[s2],id:"01"};
-    data.stations[s2]={name:[s2,s2],back:[s1],id:"02"};
+    data.stations[s1]={name:['新站点'+rand1,'New Station '+rand1],next:[s2],id:"01"};
+    data.stations[s2]={name:['新站点'+rand2,'New Station '+rand2],back:[s1],id:"02"};
     data.selected=s1;
     reset();
 }
@@ -71,6 +74,9 @@ function new_sta(){
     });
     document.getElementById('stas-choose').lastElementChild.value='__end';
     document.getElementById('new_sta').classList.remove('hide');
+    var rand=Math.floor(Math.random()*114514);
+    document.getElementById('new_zh_name').value='新站点'+rand;
+    document.getElementById('new_en_name').value='New Station '+rand;
 }
 
 function generate_randstr(length=16) {
@@ -87,17 +93,19 @@ function add_sta(){
     var v=sel.options[sel.selectedIndex].value;
     var sname;
     do{sname=generate_randstr();}while(data.stations.sname);
+    var zh=document.getElementById('new_zh_name').value;
+    var en=document.getElementById('new_en_name').value;
     if(v=='__start'){
         data.stations[data.start].back=[sname];
-        data.stations[sname]={name:[sname,sname],next:[data.start],id:"00"};
+        data.stations[sname]={name:[zh,en],next:[data.start],id:"00"};
         data.start=sname;
     }else if(v=='__end'){
         data.stations[data.end].next=[sname];
-        data.stations[sname]={name:[sname,sname],back:[data.end],id:"00"};
+        data.stations[sname]={name:[zh,en],back:[data.end],id:"00"};
         data.end=sname;
     }else{
         data.stations[data.stations[v].next].back=[sname];
-        data.stations[sname]={name:[sname,sname],back:[v],next:[data.stations[v].next],id:"00"};
+        data.stations[sname]={name:[zh,en],back:[v],next:[data.stations[v].next],id:"00"};
         data.stations[v].next=[sname];
     }
     load(data);
@@ -234,6 +242,12 @@ function load_sta(elem){
 document.querySelector(".btn.about").addEventListener("click",()=>{
     window.open('https://space.bilibili.com/3546630506678721');
 });
+var dev=false;
+if(location.href=='http://127.0.0.1:5500/index.html'){
+    document.getElementById('license').classList.add('hide');load(data);
+    dev=true;
+}
+
 
 function load(data){
     var ele=document.getElementById('stations');
@@ -283,6 +297,7 @@ function reset(){
     a_top.value=data.a_top;
     left_door.checked=data.left_door;
     to_left.checked=data.to_left;
+    color_next.checked=data.color_next;
     name0.value=data.name[0];
     name1.value=data.name[1];
     name2.value=data.name[2];
@@ -292,7 +307,7 @@ function reset(){
 var timer=-1;
 function update(){
     if(timer>0){clearTimeout(timer);}
-    timer=setTimeout(()=>{load(data);},300);
+    timer=setTimeout(()=>{var s=document.getElementsByTagName('html')[0].scrollTop;load(data);document.getElementsByTagName('html')[0].scrollTop=s;},300);
 }
 
 document.getElementById('inner').children.forEach(e=>{
@@ -308,6 +323,7 @@ document.getElementById('inner').children.forEach(e=>{
         data.a_top=parseInt(a_top.value,10);
         data.left_door=left_door.checked;
         data.to_left=to_left.checked;
+        data.color_next=color_next.checked;
         update();
     });
 });
@@ -331,3 +347,5 @@ document.querySelector('.btn.download').addEventListener('click',()=>{
 document.querySelector('.btn.export').addEventListener('click',()=>{
     svg2png(document.querySelector("#draw").innerHTML,(data.a_width+data.b_width)*data.scale,data.height*data.scale,1,data.name[0].replace(' ','_')+'_导出');
 });
+
+window.addEventListener('beforeunload',(e)=>{if(!dev){e.preventDefault();e.returnValue='';}});

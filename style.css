@@ -27,8 +27,13 @@ html{
 #top{
     display:flex;
     align-items:center;
-    padding:5px;
-    background-color:rgb(35, 87, 87)
+    padding-top:5px;
+    padding-bottom:5px;
+    background-color:rgb(35, 87, 87);
+    position:sticky;
+    top:0;
+    width:100%;
+    z-index:1145;
 }
 
 #top>.btn{
@@ -51,19 +56,30 @@ html{
 
 #main{
     flex-grow:1;
-    display: flex;
+    display:flex;
 }
+
+/* #stas{
+    overflow-y:auto;
+    height:50%;
+}
+
+#stas-top{
+    position:sticky;
+    top:0;
+    background-color: #fff;
+} */
 
 #style{
     height:100%;
     transition:width 0.3s;
     border:solid 1px #000;
     flex-direction:column;
-    display:none;
-    position:fixed;
-    top:0;
-    right:0;
     background-color:#fff;
+    width:0;
+    position:fixed;
+    top:54px;
+    right:0px;
 }
 
 #style>#inner,#style>#inner2{

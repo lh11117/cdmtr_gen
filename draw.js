@@ -2,7 +2,7 @@
 var data;
 
 
-function textalign(text,x,y,way='left',ho="top"){return text.x(x-(way=="left"?0:text.bbox().width)).y(y-(ho=="top"?0:text.bbox().height));}
+function textalign(text,x,y,way='left',ho="top"){return text.x(x-(way=="left"?0:text.bbox().width/(way=="center"?2:1))).y(y-(ho=="top"?0:text.bbox().height/(ho=="center"?2:1)));}
 function next_station(id,to_left){var xid=id;do{xid=data.stations[xid][to_left?'next':'back'][0];}while(data.stations[xid].no_serve&&data.stations[xid][to_left?'next':'back']);return xid;}
 function interchange2(draw,x,y,color,ali='middle'){
     var b1=draw.path('M4.56,15.44H4.17c-2.16,0-3.92-1.75-3.92-3.92V4.17C0.25,2,2,0.25,4.17,0.25h0.39c2.16,0,3.92,1.75,3.92,3.92v7.35C8.48,13.69,6.72,15.44,4.56,15.44z').stroke({width:0.75,color:color[0]}).fill("#fff");
@@ -92,31 +92,36 @@ function generate(data) {
     const draw=draw0.group();
     draw.scale(data.scale);
     var barY;
-    var flt='Frutiger LT 55 Roman.ttf';
+    var flt='./Frutiger LT 55 Roman.ttf';
+    var black=data.color_next?data.color:'#000';
     {
-        draw.rect(data.a_width, data.height).fill('#fff').stroke({width:1,color:'#000'});
-        y+=draw.text(data.stations[data.selected].name[0]).font({family:'微软雅黑',size:24,anchor:'middle'}).center(x,y).bbox().height-10;
-        data.stations[data.selected].name[1].split('\n').forEach(text=>{y+=draw.text(text).font({family:flt,size:13,anchor:'middle'}).center(x,y).bbox().height-5;});
+        var g0=draw.group();
+        g0.rect(data.a_width, data.height).fill('#fff').stroke({width:1,color:'#000'});
+        y+=textalign(g0.text(data.stations[data.selected].name[0]).font({family:'微软雅黑',size:24,anchor:'middle'}).fill(black),x,y,'center','top').bbox().height;
+        var g1=draw.group();
+        textalign(g1.text(data.stations[data.selected].name[1]).fill(black).font({family:flt,size:13,anchor:'middle'}),x,y,'center','top');
+        y+=g1.bbox().height+10;
         draw.rect(data.a_width-data.margin,8).center(x,y+10).fill(data.color).radius(4);
         barY=y+10;
         draw.rect(50, 20).center(x,y+10).fill('#fff').radius(10).stroke({width:1,color:data.color});
         draw.path([['M',x,y],['L',x,y+20]]).stroke({width:1,color:data.color});
-        var t=draw.text(data.name[2]).font({family:flt,size:13,anchor:'middle',fill:data.color});
-        t.center(x-t.bbox().width*0.8,y+8.5)
-        t=draw.text(data.stations[data.selected].id).font({family:flt,size:13,anchor:'middle',fill:data.color});
-        t.center(x+t.bbox().width*0.8,y+8.5);
-        var end_sta = stations[0];
+        var ft=13;
+        var t=draw.text(data.name[2]).font({family:flt,size:ft,anchor:'middle',fill:data.color}).center(x-12.5,y+8.5);
+        while(t.bbox().width>24){ft-=0.1;t.font({size:ft}).center(x-12.5,y+8.5);}
+        ft=13;
+        t=draw.text(data.stations[data.selected].id).font({family:flt,size:13,anchor:'middle',fill:data.color}).center(x+12.5,y+8.5);
+        while(t.bbox().width>24){ft-=0.1;t.font({size:ft}).center(x+12.5,y+8.5);}
+        var end_sta=stations[0];
         if(data.to_left){end_sta=stations[stations.length-1];}
         var oy=y;
         x=data.left_door?data.margin/2+5:data.a_width-(data.margin/2+5);
-        y-=12;
         var way=data.left_door?'left':'right';
         var u=data.left_door?1:-1;
         var y_l=y;
         var last_height;
-        (data.stations[data.stations[data.selected][data.to_left?'next':'back']]?"To "+end_sta.name[1]:"The Terminal Station").split('\n').reverse().forEach(text=>{y-=(last_height=textalign(draw.text(text).font({family:flt,size:11,anchor:'left'}),x,y,way).bbox().height)-3;});
-        y-=5;
-        textalign(draw.text(data.stations[data.stations[data.selected][data.to_left?'next':'back']]?end_sta.name[0]+"方向":"终点站").font({family:'微软雅黑',size:16,anchor:'left'}),x,y,way).bbox().height;
+        var g3=draw.group();
+        y-=(last_height=textalign(g3.text(data.stations[data.stations[data.selected][data.to_left?'next':'back']]?"To "+end_sta.name[1]:"The Terminal Station").fill(black).font({family:flt,size:11,anchor:'left'}),x,y,way,'bottom').bbox().height)-3;
+        textalign(draw.text(data.stations[data.stations[data.selected][data.to_left?'next':'back']]?end_sta.name[0]+"方向":"终点站").fill(black).font({family:'微软雅黑',size:16,anchor:'left'}),x,y,way,'bottom').bbox().height;
         y=y_l-last_height-5;
         if(data.new){
             var margin=data.margin/2+10;
@@ -136,10 +141,10 @@ function generate(data) {
         }
         if(data.stations[data.stations[data.selected][data.to_left?'next':'back']]){
             y=oy+20;
-            x+=u*(textalign(draw.polygon([[10.92*u,0],[17.96*u,0],[8.87*u,9.55],[28.43*u,9.55],[28.43*u,15.01],[9.78*u,15.01],[18.65*u,23.42],[11.14*u,23.42],[0,11.71]]),x,y,way).bbox().width + 5);
+            x+=u*(textalign(draw.polygon([[10.92*u,0],[17.96*u,0],[8.87*u,9.55],[28.43*u,9.55],[28.43*u,15.01],[9.78*u,15.01],[18.65*u,23.42],[11.14*u,23.42],[0,11.71]]),x,y,way).fill(black).bbox().width + 5);
             y-=3;
-            y+=textalign(draw.text("下一站："+data.stations[next_station(data.selected,data.to_left)].name[0]).font({family:'微软雅黑',size:14,anchor:'left'}),x,y,way).bbox().height;
-            textalign(draw.text("Next Station: "+data.stations[next_station(data.selected,data.to_left)].name[1]).font({family:flt,size:9,anchor:'left'}),x,y,way);
+            y+=textalign(draw.text("下一站："+data.stations[next_station(data.selected,data.to_left)].name[0]).fill(black).font({family:'微软雅黑',size:14,anchor:'left'}),x,y,way).bbox().height;
+            textalign(draw.text("Next Station: "+data.stations[next_station(data.selected,data.to_left)].name[1]).fill(black).font({family:flt,size:9,anchor:'left'}),x,y,way);
         }
     }
     {
@@ -167,8 +172,14 @@ function generate(data) {
             // console.log(pass,i.name[0]);
             draw.rect(15, 6).center(x+15,y).fill('#fff').radius(3).stroke({width:0.5,color:data.color});
             draw.path([['M',x+15,y-3],['L',x+15,y+3]]).stroke({width:0.5,color:data.color});
-            textalign(draw.text(data.name[2]).font({family:flt,size:4,anchor:'middle',fill:data.color}),x+13.5,y-3,'right');
-            textalign(draw.text(i.id).font({family:flt,size:4,anchor:'middle',fill:data.color}),x+16.5,y-3,'left');
+            var ft=4;
+            //11.25=15-7.5/2
+            //18.75=15+7.5/2
+            var tt=draw.text(data.name[2]).font({family:flt,size:ft,anchor:'middle',fill:data.color}).center(x+11.25,y);
+            while(tt.bbox().width>7){ft-=0.1;tt.font({size:ft}).center(x+11.25,y);}
+            ft=4;
+            tt=draw.text(i.id).font({family:flt,size:4,anchor:'middle',fill:data.color}).center(x+18.75,y);
+            while(tt.bbox().width>7){ft-=0.1;tt.font({size:ft}).center(x+18.75,y);}
             var path,path2;
             if(i.key==data.selected&&data.new){
                 path=draw.path();
