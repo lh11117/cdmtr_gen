@@ -244,7 +244,7 @@ document.querySelector(".btn.about").addEventListener("click",()=>{
 });
 var dev=false;
 if(location.href=='http://127.0.0.1:5500/index.html'){
-    document.getElementById('license').classList.add('hide');load(data);window.addEventListener('beforeunload',(e)=>{if(!dev){e.preventDefault();e.returnValue='';}});
+    document.getElementById('license').classList.add('hide');load(data);
     dev=true;
 }
 
@@ -347,3 +347,5 @@ document.querySelector('.btn.download').addEventListener('click',()=>{
 document.querySelector('.btn.export').addEventListener('click',()=>{
     svg2png(document.querySelector("#draw").innerHTML,(data.a_width+data.b_width)*data.scale,data.height*data.scale,1,data.name[0].replace(' ','_')+'_导出');
 });
+
+window.addEventListener('beforeunload',(e)=>{if(!dev){e.preventDefault();e.returnValue='';}});
