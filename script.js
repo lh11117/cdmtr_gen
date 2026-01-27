@@ -244,7 +244,7 @@ document.querySelector(".btn.about").addEventListener("click",()=>{
 });
 var dev=false;
 if(location.href=='http://127.0.0.1:5500/index.html'){
-    document.getElementById('license').classList.add('hide');load(data);
+    document.getElementById('license').classList.add('hide');load(data);window.addEventListener('beforeunload',(e)=>{if(!dev){e.preventDefault();e.returnValue='';}});
     dev=true;
 }
 
@@ -258,10 +258,10 @@ function load(data){
         var div=document.createElement('tr');
         div.classList.add('stas');
         var p1=document.createElement('td');
-        p1.innerText=e.name[0];
+        p1.innerText=e.name[0]+(e.no_serve?' (未开通)':'');
         div.appendChild(p1);
         var p2=document.createElement('td');
-        p2.innerText=e.name[1];
+        p2.innerText=e.name[1]+(e.no_serve?' (Not yet in service)':'');
         div.appendChild(p2);
         var p3=document.createElement('td');
         p3.innerText=data.name[2]+'|'+e.id;
@@ -315,7 +315,7 @@ document.getElementById('inner').children.forEach(e=>{
     e.addEventListener("input",()=>{
         data.name=[name0.value,name1.value,name2.value];
         data.color=color.value;
-        data.scale=parseInt(scale.value,10);
+        data.scale=parseFloat(scale.value);
         data.a_width=parseInt(a_width.value,10);
         data.b_width=parseInt(b_width.value,10);
         data.height=parseInt(height.value,10);
@@ -347,5 +347,3 @@ document.querySelector('.btn.download').addEventListener('click',()=>{
 document.querySelector('.btn.export').addEventListener('click',()=>{
     svg2png(document.querySelector("#draw").innerHTML,(data.a_width+data.b_width)*data.scale,data.height*data.scale,1,data.name[0].replace(' ','_')+'_导出');
 });
-
-window.addEventListener('beforeunload',(e)=>{if(!dev){e.preventDefault();e.returnValue='';}});

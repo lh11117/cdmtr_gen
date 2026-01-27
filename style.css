@@ -206,3 +206,8 @@ th,td{
     cursor:pointer;
     padding:3px;
 }
+
+@font-face {
+    font-family: "FrutigerLT55Roman";
+    src: url("./Frutiger LT 55 Roman.ttf");
+}

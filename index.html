@@ -40,12 +40,12 @@
             <span class="b">×</span>
           </div>
           <div id="inner">
-            <label>缩放:</label><input type="number" id="scale"><br>
-            <label>左边宽度:</label><input type="number" id="a_width"><br>
-            <label>右边宽度:</label><input type="number" id="b_width"><br>
-            <label>整体高度:</label><input type="number" id="height"><br>
-            <label>左右边距:</label><input type="number" id="margin"><br>
-            <label>上面边距:</label><input type="number" id="a_top"><br>
+            <label>缩放:</label><input type="number" id="scale" step="0.01" min="0"><br>
+            <label>左边宽度:</label><input type="number" id="a_width" min="0"><br>
+            <label>右边宽度:</label><input type="number" id="b_width" min="0"><br>
+            <label>整体高度:</label><input type="number" id="height" min="0"><br>
+            <label>左右边距:</label><input type="number" id="margin" min="0"><br>
+            <label>上面边距:</label><input type="number" id="a_top" min="0"><br>
             <label>左边开门:</label><input type="checkbox" id="left_door"><br>
             <label>向左行车:</label><input type="checkbox" id="to_left"><br>
             <label>站名、下一站、方向上色:</label><input type="checkbox" id="color_next"><br>
@@ -98,7 +98,8 @@
         </div>
         <div class="body">
           本程序禁止商用！仅供车迷交流和娱乐，严禁用于商业用途！<br>
-          禁止生成违法内容！作者不会对生成的内容负责！
+          禁止生成违法内容！作者不会对生成的内容负责！<br>
+          本程序生成的内容不代表官方，仅模仿官方风格。
         </div>
         <div class="end">
           <div class="btn" id="btn-ok">我以认真阅读并同意以上内容</div>

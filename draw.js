@@ -92,7 +92,7 @@ function generate(data) {
     const draw=draw0.group();
     draw.scale(data.scale);
     var barY;
-    var flt='./Frutiger LT 55 Roman.ttf';
+    var flt='FrutigerLT55Roman';
     var black=data.color_next?data.color:'#000';
     {
         var g0=draw.group();
@@ -103,6 +103,7 @@ function generate(data) {
         y+=g1.bbox().height+10;
         draw.rect(data.a_width-data.margin,8).center(x,y+10).fill(data.color).radius(4);
         barY=y+10;
+        textalign(draw.rect((data.a_width-data.margin)/2,8).fill('#a3a3a3').stroke({width:0.15,color:'#a3a3a3'}).radius(4),x,y+10,!data.left_door?'right':'left','center');
         draw.rect(50, 20).center(x,y+10).fill('#fff').radius(10).stroke({width:1,color:data.color});
         draw.path([['M',x,y],['L',x,y+20]]).stroke({width:1,color:data.color});
         var ft=13;
@@ -147,7 +148,7 @@ function generate(data) {
             textalign(draw.text("Next Station: "+data.stations[next_station(data.selected,data.to_left)].name[1]).fill(black).font({family:flt,size:9,anchor:'left'}),x,y,way);
         }
     }
-    {
+    if(data.b_width!=0){
         draw.rect(data.b_width,data.height).fill('#fff').stroke({width:1,color:'#000'}).move(data.a_width,0);
         x=data.a_width+data.b_width/2,y=barY;
         draw.rect(data.b_width-data.margin,8).center(x,y).fill(data.color).radius(4);
@@ -163,8 +164,8 @@ function generate(data) {
         x=data.a_width+data.margin/2;
         var ww=0;
         var pass=false;
-        var rect=draw.rect(0,8).fill('#a3a3a3');
-        var rect2=draw.rect(8,8).radius(4).fill('#a3a3a3');
+        var rect=draw.rect(0,8).fill('#a3a3a3').stroke({width:0.15,color:'#a3a3a3'});
+        var rect2=draw.rect(8,8).radius(4).fill('#a3a3a3').stroke({width:0.15,color:'#a3a3a3'});
         stations.forEach(i=>{
             if(!data.left_door&&i.key!=data.selected)pass=!pass;
             if(pass)ww+=(data.b_width-data.margin-30)/(stations.length-1);
@@ -209,7 +210,7 @@ function generate(data) {
                 i.interchange.forEach(j=>{
                     y_+=14;
                     draw.rect(12,12).center(x+15,y_).radius(6).fill(j[1]);
-                    draw.text(j[0]).font({family:flt,size:7,anchor:'middle',fill:"#fff"}).center(x+15,y_-0.5);
+                    draw.text(j[0]).font({family:flt,size:7,anchor:'middle',fill:"#fff"}).center(x+15,y_);
                 })
             }
             if(!data.left_door&&i.key!=data.selected)pass=!pass;
