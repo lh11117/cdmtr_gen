@@ -21,7 +21,7 @@ function new_file(){
         a_top: 50,
         margin: 70,
         scale: 2,
-        new: false,
+        new: true,
         color_next: true
     };
     var rand1=Math.floor(Math.random()*114514);
@@ -298,6 +298,7 @@ function reset(){
     left_door.checked=data.left_door;
     to_left.checked=data.to_left;
     color_next.checked=data.color_next;
+    new_style.checked=data.new;
     name0.value=data.name[0];
     name1.value=data.name[1];
     name2.value=data.name[2];
@@ -324,6 +325,7 @@ document.getElementById('inner').children.forEach(e=>{
         data.left_door=left_door.checked;
         data.to_left=to_left.checked;
         data.color_next=color_next.checked;
+        data.new=new_style.checked;
         update();
     });
 });

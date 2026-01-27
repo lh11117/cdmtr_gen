@@ -45,6 +45,17 @@ function svg2png(svgText,w,h,s=1,name='export') {
         URL.revokeObjectURL(url);
     };
 }
+function buildPath({x,y,h,w,angle=48}) {
+  const θ=angle*Math.PI/180;
+  const sin=Math.sin(θ);
+  const cos=Math.cos(θ);
+  const A=[-h/sin,0];
+  const B=[0,0];
+  const C=[cos*w,sin*w];
+  const D=[C[0]-h*sin,C[1]+h*cos];
+  return [`M ${A[0]} ${-A[1]} L ${D[0]} ${-D[1]} L ${C[0]} ${-C[1]} L ${B[0]} ${-B[1]} Z`,[(C[0]+D[0])/2,(C[1]+D[1])/2]];
+}
+
 function loads(data){
     var stations=[];
     var next=data.start;
@@ -107,10 +118,10 @@ function generate(data) {
         draw.rect(50, 20).center(x,y+10).fill('#fff').radius(10).stroke({width:1,color:data.color});
         draw.path([['M',x,y],['L',x,y+20]]).stroke({width:1,color:data.color});
         var ft=13;
-        var t=draw.text(data.name[2]).font({family:flt,size:ft,anchor:'middle',fill:data.color}).center(x-12.5,y+8.5);
+        var t=draw.text(data.name[2]).font({family:flt,size:ft,anchor:'middle',fill:data.color}).center(x-12.5,y+10);
         while(t.bbox().width>24){ft-=0.1;t.font({size:ft}).center(x-12.5,y+8.5);}
         ft=13;
-        t=draw.text(data.stations[data.selected].id).font({family:flt,size:13,anchor:'middle',fill:data.color}).center(x+12.5,y+8.5);
+        t=draw.text(data.stations[data.selected].id).font({family:flt,size:13,anchor:'middle',fill:data.color}).center(x+12.5,y+10);
         while(t.bbox().width>24){ft-=0.1;t.font({size:ft}).center(x+12.5,y+8.5);}
         var end_sta=stations[0];
         if(data.to_left){end_sta=stations[stations.length-1];}
@@ -123,22 +134,21 @@ function generate(data) {
         var g3=draw.group();
         y-=(last_height=textalign(g3.text(data.stations[data.stations[data.selected][data.to_left?'next':'back']]?"To "+end_sta.name[1]:"The Terminal Station").fill(black).font({family:flt,size:11,anchor:'left'}),x,y,way,'bottom').bbox().height)-3;
         textalign(draw.text(data.stations[data.stations[data.selected][data.to_left?'next':'back']]?end_sta.name[0]+"方向":"终点站").fill(black).font({family:'微软雅黑',size:16,anchor:'left'}),x,y,way,'bottom').bbox().height;
-        y=y_l-last_height-5;
+        y=y_l;
         if(data.new){
-            var margin=data.margin/2+10;
-            var way2=data.left_door?'right':'left';
+            var margin=data.margin/2+5;
             var oy1=y;
-            var r=draw.rect(150, 20).fill(data.color);
-            var b1=textalign(draw.text(data.name[1]).font({family:flt,size:15,anchor:'left',fill:"#fff"}),data.left_door?data.a_width-margin:margin,y+5,way2);
-            y-=b1.bbox().height+2;
-            var b2=textalign(draw.text(data.name[0]).font({family:'微软雅黑',size:20,anchor:'left',fill:"#fff"}),data.left_door?data.a_width-margin:margin,y+5,way2)
-            var t=Math.abs(b1.bbox().width-b2.bbox().width);
-            if(b1.bbox().width>=b2.bbox().width){textalign(b2,data.left_door?data.a_width-margin-t/2:margin+t/2,y+5,way2);}
-            else{textalign(b1,data.left_door?data.a_width-margin-t/2:margin+t/2,oy1+5,way2);}
+            var g2=draw.group();
+            var r=g2.rect(114,514).fill(data.color);
+            var b1=textalign(g2.text(data.name[1]).font({family:flt,size:15,anchor:'middle',fill:"#fff"}),data.left_door?data.a_width-margin:margin,y,'center','bottom');
+            y-=b1.bbox().height;
+            var b2=textalign(g2.text(data.name[0]).font({family:'微软雅黑',size:20,anchor:'middle',fill:"#fff"}),data.left_door?data.a_width-margin:margin,y,'center','bottom');
             y-=b2.bbox().height;
-            r.size(Math.max(b1.bbox().width,b2.bbox().width)+10,oy1-y);
-            r.radius((oy1-y)*0.2);
-            textalign(r,data.left_door?data.a_width-margin+5:margin-5,oy1-(oy1-y)/2+5,way2);
+            var www=Math.max(b1.bbox().width,b2.bbox().width)+14;
+            r.size(www, oy1-y).radius((oy1-y)*0.2);
+            textalign(b1,data.left_door?data.a_width-margin-www/2:margin+www/2,oy1,'center','bottom');
+            textalign(b2,data.left_door?data.a_width-margin-www/2:margin+www/2,oy1-b1.bbox().height,'center','bottom');
+            textalign(r,data.left_door?data.a_width-margin:margin,oy1,data.left_door?'right':'left','bottom');
         }
         if(data.stations[data.stations[data.selected][data.to_left?'next':'back']]){
             y=oy+20;
@@ -181,10 +191,10 @@ function generate(data) {
             ft=4;
             tt=draw.text(i.id).font({family:flt,size:4,anchor:'middle',fill:data.color}).center(x+18.75,y);
             while(tt.bbox().width>7){ft-=0.1;tt.font({size:ft}).center(x+18.75,y);}
-            var path,path2;
+            var path,rect3;
             if(i.key==data.selected&&data.new){
                 path=draw.path();
-                path2=draw.path("M4.75,0.5L4.75,0.5C2.4,0.5,0.5,2.4,0.5,4.75H9C9,2.4,7.1,0.5,4.75,0.5z").fill(data.color);
+                rect3=draw.rect();
             }
             const group=draw.group();
             var b1=textalign(group.text(i.name[1]).font({family:flt,size:4,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))}),x+18,y-5,'left','bottom');
@@ -199,9 +209,12 @@ function generate(data) {
                 textalign(group.text(')').font({family:'微软雅黑',size:10,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))}),x+18+1+w+b114.bbox().width+1,y-5,'left','bottom');
             }
             if(i.key==data.selected&&data.new){
-                var wi=group.bbox().width+10;
-                textalign(path.plot([['M',10,0],['L',-15,0],['L',(wi*Math.sin(Math.PI/180*48)-25),-wi*Math.cos(Math.PI/180*48)],['L',wi*Math.sin(Math.PI/180*48),-wi*Math.cos(Math.PI/180*48)],['Z']]).fill(data.color).stroke({width:0.5,color:data.color}),x-6,y-4,'left','bottom');
-                path2.move(x+wi*Math.sin(Math.PI/180*48)+1,y-4-wi*Math.cos(Math.PI/180*48)-11).scale(2.2).rotate(48);
+                var pad=3;
+                var [_path,E]=buildPath({x:0,y:0,h:group.bbox().height+pad,w:group.bbox().width});
+                var xx=x+18-(group.bbox().height+pad/2)/Math.sin(48*Math.PI/180);
+                var yy=y-3.7;
+                textalign(path.plot(_path).fill(data.color),xx,yy,'left','bottom');
+                rect3.size(group.bbox().height+pad,group.bbox().height+pad).radius((group.bbox().height+pad)/2).center(E[0]+x+18+1,-E[1]+yy+1).fill(data.color);
             }
             group.rotate(-48,x+18,y-5);
             if(i.interchange){
