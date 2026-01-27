@@ -351,3 +351,8 @@ document.querySelector('.btn.export').addEventListener('click',()=>{
 });
 
 window.addEventListener('beforeunload',(e)=>{if(!dev){e.preventDefault();e.returnValue='';}});
+
+window.onresize=window.onscroll=()=>{
+    document.getElementById('style').style.top=document.getElementById("top").clientHeight+'px';
+    document.getElementById("top").style.position=(Math.abs(document.getElementsByTagName('html')[0].scrollTop-document.getElementById("top").offsetTop)>1)?'fixed':'sticky';
+};
