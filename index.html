@@ -5,110 +5,294 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>成都地铁吊板生成器</title>
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <link href="layui/css/layui.css" rel="stylesheet" />
   </head>
   <body>
-    <div id="top">
-        <h3>成都地铁吊板生成器</h3>
-        <div class="btn new">新建项目</div>
-        <div class="btn download">下载项目</div>
-        <div class="btn import">导入项目</div>
-        <div class="btn export">导出图片</div>
-        <div class="btn style">风格设置</div>
-        <div class="btn about">作者是谁</div>
-    </div>
+    <ul class="layui-nav" id="top">
+      <li class="layui-nav-item title">
+        <a href="javascript:;">成都地铁吊板生成器</a>
+      </li>
+      <li class="layui-nav-item" name="btn-new">
+        <a href="javascript:;">新建项目</a>
+      </li>
+      <li class="layui-nav-item" name="btn-download">
+        <a href="javascript:;">下载项目</a>
+      </li>
+      <li class="layui-nav-item" name="btn-import">
+        <a href="javascript:;">导入项目</a>
+      </li>
+      <li class="layui-nav-item" name="btn-export">
+        <a href="javascript:;">导出图片</a>
+      </li>
+      <li class="layui-nav-item" name="btn-style">
+        <a href="javascript:;">风格设置</a>
+      </li>
+      <li class="layui-nav-item" name="btn-about">
+        <a href="javascript:;">作者是谁</a>
+      </li>
+      <li class="layui-nav-item options">
+        <a href="javascript:;">选项</a>
+        <dl class="layui-nav-child">
+          <dd name="btn-new"><a href="javascript:;">新建项目</a></dd>
+          <dd name="btn-download"><a href="javascript:;">下载项目</a></dd>
+          <dd name="btn-import"><a href="javascript:;">导入项目</a></dd>
+          <dd name="btn-export"><a href="javascript:;">导出图片</a></dd>
+          <dd name="btn-style"><a href="javascript:;">风格设置</a></dd>
+          <dd name="btn-about"><a href="javascript:;">作者是谁</a></dd>
+        </dl>
+      </li>
+    </ul>
     <div id="main">
-        <div id="left">
-            <div id="draw"></div>
-            <div id="stas">
-              <div id="stas-top"><p>车站编辑</p><div class="btn" onclick="new_sta()">添加</div></div>
-              <table id="stas-table">
-                <thead>
-                  <tr>
-                    <th>中文</th>
-                    <th>英文</th>
-                    <th>编号</th>
-                    <th>换乘</th>
-                  </tr>
-                </thead>
-                <tbody id="stations"></tbody>
-              </table>
-            </div>
+      <div id="left">
+        <div id="draw"></div>
+        <div id="stas">
+          <div id="stas-top">
+            <p>车站编辑</p>
+            <button type="button" class="layui-btn" onclick="new_sta()">
+              添加
+            </button>
+          </div>
+          <table id="stas-table" class="layui-table">
+            <thead>
+              <tr>
+                <th>中文</th>
+                <th>英文</th>
+                <th>编号</th>
+                <th>换乘</th>
+              </tr>
+            </thead>
+            <tbody id="stations"></tbody>
+          </table>
         </div>
-        <div id="style" class="">
-          <div class="topbar">
-            <span class="a">项目风格设置</span>
-            <span class="b">×</span>
-          </div>
-          <div id="inner">
-            <label>缩放:</label><input type="number" id="scale" step="0.01" min="0"><br>
-            <label>左边宽度:</label><input type="number" id="a_width" min="0"><br>
-            <label>右边宽度:</label><input type="number" id="b_width" min="0"><br>
-            <label>整体高度:</label><input type="number" id="height" min="0"><br>
-            <label>左右边距:</label><input type="number" id="margin" min="0"><br>
-            <label>上面边距:</label><input type="number" id="a_top" min="0"><br>
-            <label>左边开门:</label><input type="checkbox" id="left_door"><br>
-            <label>向左行车:</label><input type="checkbox" id="to_left"><br>
-            <label>站名、下一站、方向上色:</label><input type="checkbox" id="color_next"><br>
-            <label>新风格:</label><input type="checkbox" id="new_style"><br>
-            <label>线路名称(中文):</label><input type="text" id="name0"><br>
-            <label>线路名称(英文):</label><input type="text" id="name1"><br>
-            <label>线路编号:</label><input type="text" id="name2"><br>
-            <label>线路颜色:</label><input type="color" id="color">
-          </div>
-          <div id="inner2">
-            <label>索引(不可变):</label><label id="key"></label><br>
-            <label>站名(中文):</label><textarea type="text" id="zh_name"></textarea><br>
-            <label>站名(英文):</label><textarea type="text" id="en_name"></textarea><br>
-            <label>编号:</label><input type="text" id="number"><br>
-            <label>未开通:</label><input type="checkbox" id="serve"><br>
-            <label>换乘:</label><div id="interchange"></div><br>
-            <div style="display:flex;">
-              <div class="btn" id="new_interchange">新增换乘</div>
-              <div class="btn" id="set_now">设为当前</div>
-              <div class="btn" id="dele">删除</div>
-            </div>
+      </div>
+      <div id="style1" class="layui-form">
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">缩放</div>
+            <input
+              type="number"
+              id="scale"
+              step="0.1"
+              min="0"
+              class="layui-input"
+            />
           </div>
         </div>
-    </div>
-    <div class="hover hide" id="new_sta">
-      <div class="dialog">
-        <div class="top">
-          <span id="dialog-text">添加车站</span>
-          <span class="close" onclick="close_new_sta()">×</span>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">左边宽度</div>
+            <input type="number" id="a_width" min="0" class="layui-input" />
+          </div>
         </div>
-        <div class="body">
-          <label>选择车站添加位置:</label>
-          <select id="stas-choose">
-            <option value="__start">开头</option>
-            <option value="__end" selected>末尾</option>
-          </select><br>
-          <label>车站中文名:</label><textarea type="text" id="new_zh_name"></textarea><br>
-          <label>车站英文名:</label><textarea type="text" id="new_en_name"></textarea><br>
-          <label>以上内容和其他内容可以稍后更改</label>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">右边宽度</div>
+            <input type="number" id="b_width" min="0" class="layui-input" />
+          </div>
         </div>
-        <div class="end">
-          <div class="btn" onclick="add_sta();close_new_sta()">确定</div>
-          <div class="btn" onclick="close_new_sta()">取消</div>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">整体高度</div>
+            <input type="number" id="height" min="0" class="layui-input" />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">左右边距</div>
+            <input type="number" id="margin" min="0" class="layui-input" />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">上面边距</div>
+            <input type="number" id="a_top" min="0" class="layui-input" />
+          </div>
+        </div>
+        <input
+          type="checkbox"
+          id="left_door"
+          class="layui-input"
+          title="左边开门"
+          lay-skin="tag"
+        /><br /><br />
+        <input
+          type="checkbox"
+          id="to_left"
+          class="layui-input"
+          title="向左行车"
+          lay-skin="tag"
+        /><br /><br />
+        <input
+          type="checkbox"
+          id="color_next"
+          class="layui-input"
+          title="站名、下一站、方向上色"
+          lay-skin="tag"
+        /><br /><br />
+        <input
+          type="checkbox"
+          id="new_style"
+          class="layui-input"
+          title="新风格"
+          lay-skin="tag"
+        /><br /><br />
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">线路名称(中文)</div>
+            <input type="text" id="name0" class="layui-input" />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">线路名称(英文)</div>
+            <input type="text" id="name1" class="layui-input" />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">线路编号</div>
+            <input type="text" id="name2" class="layui-input" />
+          </div>
+        </div>
+        <div style="display: inline">
+          <span style="padding-left: 6px">线路颜色</span
+          ><input type="color" id="color" class="layui-input" />
+        </div>
+        <button type="button" class="layui-btn" id="choose-col-btn">使用已有颜色</button>
+      </div>
+
+      <div id="style2" class="layui-form">
+        <span style="padding-left: 6px">索引: </span><label id="key"></label
+        ><br /><br />
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">站名(中文)</div>
+            <textarea
+              type="text"
+              id="zh_name"
+              class="layui-textarea"
+            ></textarea>
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">站名(英文)</div>
+            <textarea
+              type="text"
+              id="en_name"
+              class="layui-textarea"
+            ></textarea>
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">编号</div>
+            <input type="text" id="number" class="layui-input" />
+          </div>
+        </div>
+        <input type="checkbox" id="serve" title="未开通" lay-skin="tag" />
+        <br />
+        <br />
+        <label>换乘:</label>
+        <div id="interchange"></div>
+        <br />
+        <div style="display: flex">
+          <button type="button" class="layui-btn" id="new_interchange">
+            新增换乘
+          </button>
+          <button type="button" class="layui-btn" id="set_now">设为当前</button>
+          <button type="button" class="layui-btn" id="dele">删除</button>
         </div>
       </div>
     </div>
-    <div class="hover" id="license">
-      <div class="dialog">
-        <div class="top">
-          <h1 id="dialog-text">用前必读！</h1>
+    <div id="new_sta_dialog" style="display: none; padding: 15px">
+      <div class="layui-form">
+        <div class="layui-form-item">
+          <label>选择车站添加位置:</label>
+          <select id="stas-choose" lay-search="{fuzzy: false}">
+            <option value="__start">开头</option>
+            <option value="__end" selected>末尾</option>
+          </select>
         </div>
-        <div class="body">
-          本程序禁止商用！仅供车迷交流和娱乐，严禁用于商业用途！<br>
-          禁止生成违法内容！请用户对生成的内容负责！<br>
-          本程序生成的内容不代表官方，仅模仿官方风格。
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">站名(中文)</div>
+            <textarea
+              type="text"
+              id="new_zh_name"
+              class="layui-textarea"
+            ></textarea>
+          </div>
         </div>
-        <div class="end">
-          <div class="btn" id="btn-ok">我已认真阅读并同意以上内容</div>
-          <div class="btn" onclick="window.location.href='about:blank;';">我不同意以上内容</div>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">站名(英文)</div>
+            <textarea
+              type="text"
+              id="new_en_name"
+              class="layui-textarea"
+            ></textarea>
+          </div>
         </div>
+        <label>以上内容和其他内容可以稍后更改</label>
+      </div>
+      <div class="end">
+        <button
+          type="button"
+          class="layui-btn"
+          onclick="
+            add_sta();
+            close_new_sta();
+          "
+        >
+          确定
+        </button>
+        <button
+          type="button"
+          class="layui-btn"
+          onclick="close_new_sta()"
+        >
+          取消
+        </button>
+      </div>
+    </div>
+    <div
+      id="choose-color"
+      class="layui-form"
+      style="display: none; padding: 15px"
+    >
+      <div class="layui-form-item">
+        <label>选择线路</label>
+        <label id="preview-color"></label><br />
+        <select
+          id="line-choose"
+          lay-filter="line-choose-filter"
+          lay-search="{fuzzy: false}"
+        ></select
+        ><br />
+        <button type="button" class="layui-btn btn_ok">确定</button
+        ><button type="button" class="layui-btn btn_cancel">取消</button>
+      </div>
+    </div>
+    <div
+      id="download-png"
+      class="layui-form"
+      style="display: none; padding: 15px"
+    >
+      <div class="layui-form-item">
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-prefix">文件名称</div>
+            <input type="text" id="file-name" class="layui-input" />
+            <div class="layui-input-split layui-input-suffix">.png</div>
+          </div>
+        </div>
+        <button type="button" class="layui-btn btn_ok">确定</button>
+        <button type="button" class="layui-btn btn_cancel">取消</button>
       </div>
     </div>
   </body>
+  <script src="layui/layui.js"></script>
   <script src="svg.min.js"></script>
   <script src="draw.js"></script>
   <script src="script.js"></script>
