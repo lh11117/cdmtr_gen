@@ -98,7 +98,7 @@ function new_file(){
     var rand3=Math.floor(Math.random()*114514);
     var s1=generate_randstr(),s2=generate_randstr(),s3=generate_randstr();
     data.start=s1;
-    data.end=s2;
+    data.end=s3;
     data.stations[s1]={name:['新站点'+rand1,'New Station '+rand1],next:[s2],id:"01"};
     data.stations[s2]={name:['新站点'+rand2,'New Station '+rand2],back:[s1],next:[s3],id:"02"};
     data.stations[s3]={name:['新站点'+rand3,'New Station '+rand3],back:[s2],id:"03"};
