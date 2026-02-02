@@ -325,6 +325,7 @@ function load_sta(elem){
             div.style.display='flex';
             div.style.alignItems='center';
             var inp=document.createElement('input');
+            inp.classList.add('layui-input');
             inp.oninput=(e)=>{
                 data.stations[elem.key].interchange[j][0]=e.srcElement.value;
                 update();
@@ -350,7 +351,7 @@ function load_sta(elem){
             }
             var div2=document.createElement('button');
             div2.className='layui-btn layui-btn-primary layui-border-green layui-btn-sm';
-            div2.innerHTML=`<i class="layui-icon layui-icon-delete" style="font-size: 30px;"></i>`;
+            div2.innerHTML=`删除`;
             div2.onclick=()=>{
                 layer.confirm(`是否要删除车站“${elem.name[0]}(${elem.name[1]})”的<span style="color:${e[1]};">${e[0]}号线</span>换乘?`, {
                     btn: ['删除', '取消'],
@@ -376,7 +377,7 @@ function load_sta(elem){
                     load_sta(elem);
                     update();
                 }
-                div3.innerHTML=`<i class="layui-icon layui-icon-up" style="font-size: 30px;"></i>`;
+                div3.innerHTML=`↑`;
                 div3.className='layui-btn layui-btn-primary layui-border-green layui-btn-sm';
                 div.appendChild(div3);
             }
@@ -387,7 +388,7 @@ function load_sta(elem){
                     load_sta(elem);
                     update();
                 }
-                div4.innerHTML=`<i class="layui-icon layui-icon-down" style="font-size: 30px;"></i>`;
+                div4.innerHTML=`↓`;
                 div4.className='layui-btn layui-btn-primary layui-border-green layui-btn-sm';
                 div.appendChild(div4);
             }
