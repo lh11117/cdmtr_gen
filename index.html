@@ -68,7 +68,7 @@
       <div id="style1" class="layui-form">
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">缩放</div>
+            <div class="layui-input-split layui-input-prefix">缩放</div>
             <input
               type="number"
               id="scale"
@@ -80,31 +80,31 @@
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">左边宽度</div>
+            <div class="layui-input-split layui-input-prefix">左边宽度</div>
             <input type="number" id="a_width" min="0" class="layui-input" />
           </div>
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">右边宽度</div>
+            <div class="layui-input-split layui-input-prefix">右边宽度</div>
             <input type="number" id="b_width" min="0" class="layui-input" />
           </div>
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">整体高度</div>
+            <div class="layui-input-split layui-input-prefix">整体高度</div>
             <input type="number" id="height" min="0" class="layui-input" />
           </div>
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">左右边距</div>
+            <div class="layui-input-split layui-input-prefix">左右边距</div>
             <input type="number" id="margin" min="0" class="layui-input" />
           </div>
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">上面边距</div>
+            <div class="layui-input-split layui-input-prefix">上面边距</div>
             <input type="number" id="a_top" min="0" class="layui-input" />
           </div>
         </div>
@@ -138,19 +138,19 @@
         /><br /><br />
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">线路名称(中文)</div>
+            <div class="layui-input-split layui-input-prefix">线路名称(中文)</div>
             <input type="text" id="name0" class="layui-input" />
           </div>
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">线路名称(英文)</div>
+            <div class="layui-input-split layui-input-prefix">线路名称(英文)</div>
             <input type="text" id="name1" class="layui-input" />
           </div>
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">线路编号</div>
+            <div class="layui-input-split layui-input-prefix">线路编号</div>
             <input type="text" id="name2" class="layui-input" />
           </div>
         </div>
@@ -159,6 +159,9 @@
           ><input type="color" id="color" class="layui-input" />
         </div>
         <button type="button" class="layui-btn" id="choose-col-btn">使用已有颜色</button>
+        <button type="button" class="layui-btn" id="number-station">一键编号</button>
+        <button type="button" class="layui-btn" id="reverse-station">线路反转</button>
+        <button type="button" class="layui-btn" id="read-station">读取现有站点(仅中文)</button>
       </div>
 
       <div id="style2" class="layui-form">
@@ -166,7 +169,7 @@
         ><br /><br />
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">站名(中文)</div>
+            <div class="layui-input-split layui-input-prefix">站名(中文)</div>
             <textarea
               type="text"
               id="zh_name"
@@ -176,7 +179,7 @@
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">站名(英文)</div>
+            <div class="layui-input-split layui-input-prefix">站名(英文)</div>
             <textarea
               type="text"
               id="en_name"
@@ -186,7 +189,7 @@
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">编号</div>
+            <div class="layui-input-split layui-input-prefix">编号</div>
             <input type="text" id="number" class="layui-input" />
           </div>
         </div>
@@ -216,7 +219,7 @@
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">站名(中文)</div>
+            <div class="layui-input-split layui-input-prefix">站名(中文)</div>
             <textarea
               type="text"
               id="new_zh_name"
@@ -226,7 +229,7 @@
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">站名(英文)</div>
+            <div class="layui-input-split layui-input-prefix">站名(英文)</div>
             <textarea
               type="text"
               id="new_en_name"
@@ -282,11 +285,61 @@
       <div class="layui-form-item">
         <div class="layui-form-item">
           <div class="layui-input-group">
-            <div class="layui-input-prefix">文件名称</div>
+            <div class="layui-input-split layui-input-prefix">文件名称</div>
             <input type="text" id="file-name" class="layui-input" />
             <div class="layui-input-split layui-input-suffix">.png</div>
           </div>
         </div>
+        <button type="button" class="layui-btn btn_ok">确定</button>
+        <button type="button" class="layui-btn btn_cancel">取消</button>
+      </div>
+    </div>
+    <div
+      id="number-station-dialog"
+      class="layui-form"
+      style="display: none; padding: 15px"
+    >
+      <div class="layui-form-item">
+        <div class="layui-form-item">
+          <input
+            type="checkbox"
+            id="reverse-number"
+            class="layui-input"
+            title="反转编号"
+            lay-skin="tag"
+          /><br /><br />
+        </div>
+        <button type="button" class="layui-btn btn_ok">确定</button>
+        <button type="button" class="layui-btn btn_cancel">取消</button>
+      </div>
+    </div>
+    <div
+      id="read-station-dialog"
+      class="layui-form"
+      style="display: none; padding: 15px"
+    >
+      <div class="layui-form-item">
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-split layui-input-prefix">城市</div>
+            <input type="text" id="read-city-name" class="layui-input" value="成都"/>
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
+            <div class="layui-input-split layui-input-prefix">线路名称</div>
+            <input type="text" id="read-line-name" class="layui-input" value="2号线"/>
+            <div class="layui-input-split layui-input-suffix" style="cursor: pointer;" id="read-lines-search">
+              <i class="layui-icon layui-icon-search"></i>
+            </div>
+          </div>
+        </div>
+        <select
+          id="read-line-choose"
+          lay-filter="read-line-choose-filter"
+          lay-search="{fuzzy: false}"
+        ></select
+        ><br />
         <button type="button" class="layui-btn btn_ok">确定</button>
         <button type="button" class="layui-btn btn_cancel">取消</button>
       </div>

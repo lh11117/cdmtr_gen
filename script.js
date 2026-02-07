@@ -110,7 +110,6 @@ new_file();
 
 document.getElementsByName("btn-new").forEach(e=>{
     e.addEventListener('click',()=>{
-        
         layer.confirm("警告: 确定要新建项目吗? 如果您没有下载当前项目的JSON配置文件(并非图片), 当前项目可能会丢失",
             {
                 btn: ['确定', '取消'],
@@ -150,12 +149,112 @@ document.getElementsByName("btn-import").forEach(e=>{
 
 document.getElementById('choose-col-btn').addEventListener('click',()=>{
     getColor().then(e=>{
-        document.getElementById('name0').value=e.name['zh-Hans'].split('/')[0];
+        document.getElementById('read-line-name').value=document.getElementById('name0').value=e.name['zh-Hans'].split('/')[0];
         document.getElementById('name1').value=e.name.en.split('/')[0];
         document.getElementById('name2').value=((s)=>{return (s.length==1?'0':'')+s;})(e.name['zh-Hans'].split('/')[0].replace(/线+$/, '').replace(/号+$/, ''));
         document.getElementById('color').value=e.colour;
         UpdateInfo();
     });
+});
+
+var buslines=[];
+$('#read-station').on('click',()=>{
+    layer.confirm("是否要读取现有线路, 您未保存的内容会丢失!", {
+        btn: ['确定', '取消'],
+        btn1:(ind,_,__)=>{
+            layer.close(ind);
+            var index=layer.open({
+                type:1,
+                area: [Math.min(window.innerWidth,600)+'px', Math.min(window.innerHeight,500)+'px'],
+                content: $('#read-station-dialog'),
+            });
+            document.querySelector('#read-station-dialog>div>button.btn_ok').onclick=()=>{
+                if(buslines.length==0){layer.alert('请先搜索线路');return;}
+                data.stations={};
+                var last;
+                buslines[document.getElementById('read-line-choose').selectedIndex].busstops.forEach((n,c)=>{
+                    var s;
+                    do{s=generate_randstr();}while(data[s]);
+                    data.stations[s]={name:[n.name,'Station'],id:(function(s){return(s.length<2?"0":"")+s;})(n.sequence)};
+                    if(c==0)data.start=data.selected=s;
+                    else{data.stations[last].next=[s];data.stations[s].back=[last];}
+                    last=s;
+                });
+                data.end=last;
+                load(data);
+                layer.close(index);
+            };
+            document.querySelector('#read-station-dialog>div>button.btn_cancel').onclick=()=>{layer.close(index);};
+        }
+    });
+});
+
+function getLines(city,keywords,ok=(e)=>{},no=(_,__,___)=>{}){
+    var dt={
+        keywords: keywords
+    };
+    if(city)dt.city=city;
+    $.ajax({
+        url: "https://lhhhhh.pythonanywhere.com/api/busline",
+        type: "GET",
+        data: dt,
+        dataType: "json",
+        success: ok,
+        error: no
+    });
+}
+
+$('#read-lines-search').on('click',()=>{
+    var loadIndex = layer.msg('加载中', {
+        icon: 16,
+        shade: 0.1
+    });
+    getLines(document.getElementById('read-city-name').value,document.getElementById('read-line-name').value,function (r) {
+        if(r.status=='1'){
+            layer.close(loadIndex);
+            buslines=r.buslines;
+            var rlc=document.getElementById('read-line-choose');
+            rlc.innerHTML='';
+            buslines.forEach((b,i)=>{
+                var op=document.createElement('option');
+                op.value='id_'+i;
+                op.innerText=b.name;
+                rlc.appendChild(op);
+            });
+            layui.form.render($('#read-line-choose'))
+        }
+    },function (xhr, status, error) {
+        layer.close(loadIndex);
+        layer.alert("获取失败! ");
+        console.error("Error occurred:", status, error);
+    });
+});
+
+$('#number-station').on('click',()=>{
+    var index=layer.open({
+        type:1,
+        area: [Math.min(window.innerWidth,600)+'px', Math.min(window.innerHeight,500)+'px'],
+        content: $('#number-station-dialog'),
+    });
+    document.querySelector('#number-station-dialog>div>button.btn_ok').onclick=()=>{
+        var step=1;
+        var start=1;
+        if(document.getElementById('reverse-number').checked){
+            step=-1;
+            start=countA(data);
+        }
+        var next=data.start;
+        while(next){
+            data.stations[next].id=(function(s){return (s.length<2?"0":"")+s;})(start+'');
+            start+=step;
+            next=data.stations[next].next;
+            if(next)next=next[0];
+            // console.log(start);
+        }
+        load(data);
+        layer.close(index);
+    };
+    document.querySelector('#number-station-dialog>div>button.btn_cancel').onclick=()=>{layer.close(index);};
 });
 
 var nindex=-1;
@@ -230,6 +329,8 @@ var dev=false;
 if(location.href=='http://127.0.0.1:5500/index.html'){
     load(data);
     dev=true;
+    var t_=document.getElementsByTagName('title')[0];
+    t_.textContent='[DEV] '+t_.textContent;
 }else{
     layer.alert("本程序禁止商用！仅供车迷交流和娱乐，严禁用于商业用途！\n禁止生成违法内容！请用户对生成的内容负责！\n本程序生成的内容不代表官方，仅模仿官方风格。",
         {
