@@ -205,16 +205,17 @@ async function generate(data) {
                 rect3=draw.rect();
             }
             const group=draw.group();
-            var b1=textalign(group.text(i.name[1]).font({family:flt,size:4,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))}),x+18,y-5,'left','bottom');
+            var color_text=pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39");
+            var b1=textalign(group.text(i.name[1]).font({family:flt,size:4,anchor:'left',fill:color_text}),x+18,y-5,'left','bottom');
             var h=b1.bbox().height;
-            var b2=textalign(group.text(i.name[0]).font({family:'微软雅黑',size:7,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))}),x+18,y-5-h,'left','bottom');
+            var b2=textalign(group.text(i.name[0]).font({family:'微软雅黑',size:7,anchor:'left',fill:color_text}),x+18,y-5-h,'left','bottom');
             if(i.no_serve){
                 var w=Math.max(b1.bbox().w,b2.bbox().w);
-                w+=textalign(group.text('(').font({family:'微软雅黑',size:10,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))}),x+18+1+w,y-5,'left','bottom').bbox().width+1;
-                var b114=textalign(group.text('Not yet in service').font({family:flt,size:4,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))}),x+18+1+w,y-5,'left','bottom');
-                var b1919=group.text('暂未开通').font({family:'微软雅黑',size:6,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))});
+                w+=textalign(group.text('(').font({family:'微软雅黑',size:10,anchor:'left',fill:color_text}),x+18+1+w,y-5,'left','bottom').bbox().width+1;
+                var b114=textalign(group.text('Not yet in service').font({family:flt,size:4,anchor:'left',fill:color_text}),x+18+1+w,y-5,'left','bottom');
+                var b1919=group.text('暂未开通').font({family:'微软雅黑',size:6,anchor:'left',fill:color_text});
                 textalign(b1919,x+18+1+w+(b114.bbox().width-b1919.bbox().width)/2,y-4-b114.bbox().height,'left','bottom');
-                textalign(group.text(')').font({family:'微软雅黑',size:10,anchor:'left',fill:(pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39"))}),x+18+1+w+b114.bbox().width+1,y-5,'left','bottom');
+                textalign(group.text(')').font({family:'微软雅黑',size:10,anchor:'left',fill:color_text}),x+18+1+w+b114.bbox().width+1,y-5,'left','bottom');
             }
             if(i.key==data.selected&&data.new){
                 var pad=3;
@@ -239,6 +240,7 @@ async function generate(data) {
             x+=(data.b_width-data.margin-30)/(stations.length-1);
         });
         ww+=15/4*3-0.5;
+        if(data.new)ww-=5;
         rect.size(ww,8).move(data.left_door?data.a_width+data.b_width-ww-4-data.margin/2:data.a_width+data.margin/2+4,y-4);
         rect2.move(data.left_door?data.a_width+data.b_width-data.margin/2-8:data.a_width+data.margin/2,y-4);
     }

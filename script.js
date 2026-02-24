@@ -606,9 +606,30 @@ document.getElementsByName('btn-download').forEach(e=>{
 
 document.getElementsByName('btn-export').forEach(e=>{
     e.addEventListener('click',()=>{
+        document.getElementById('no_left').checked=document.getElementById('no_right').checked=false;
         document.getElementById('file-name').value=data.name[0].replace(' ','_')+'_导出';
         const index=layer.open({type:1,content:$('#download-png')});
-        document.querySelector('#download-png>div>button.btn_ok').onclick=()=>{layer.close(index);svg2png(document.querySelector("#draw").innerHTML,(data.a_width+data.b_width)*data.scale,data.height*data.scale,3,document.getElementById('file-name').value);};
+        document.querySelector('#download-png>div>button.btn_ok').onclick=async()=>{
+            if(document.getElementById('no_left').checked&&document.getElementById('no_right').checked){
+                layer.alert("不可以两边都不导出! ");
+                return;
+            }
+            layer.close(index);
+            var svg_old;
+            if(document.getElementById('no_left').checked||document.getElementById('no_right').checked){
+                var wwwwwwww=[data.a_width,data.b_width];
+                svg_old=document.querySelector("#draw").innerHTML;
+                data.a_width*=!document.getElementById('no_left').checked;
+                data.b_width*=!document.getElementById('no_right').checked;
+                await generate(data);
+            }
+            svg2png(document.querySelector("#draw").innerHTML,(data.a_width+data.b_width)*data.scale,data.height*data.scale,3,document.getElementById('file-name').value);
+            if(document.getElementById('no_left').checked||document.getElementById('no_right').checked){
+                document.querySelector("#draw").innerHTML=svg_old;
+                data.a_width=wwwwwwww[0];
+                data.b_width=wwwwwwww[1];
+            }
+        };
         document.querySelector('#download-png>div>button.btn_cancel').onclick=()=>{layer.close(index);};
     });
 });
