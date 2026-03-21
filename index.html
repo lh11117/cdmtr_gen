@@ -28,7 +28,7 @@
         <a href="javascript:;">风格设置</a>
       </li>
       <li class="layui-nav-item" name="btn-about">
-        <a href="javascript:;">作者是谁</a>
+        <a href="javascript:;">关于项目</a>
       </li>
       <li class="layui-nav-item options">
         <a href="javascript:;">选项</a>
@@ -38,7 +38,7 @@
           <dd name="btn-import"><a href="javascript:;">导入项目</a></dd>
           <dd name="btn-export"><a href="javascript:;">导出图片</a></dd>
           <dd name="btn-style"><a href="javascript:;">风格设置</a></dd>
-          <dd name="btn-about"><a href="javascript:;">作者是谁</a></dd>
+          <dd name="btn-about"><a href="javascript:;">关于项目</a></dd>
         </dl>
       </li>
     </ul>
@@ -46,23 +46,41 @@
       <div id="left">
         <div id="draw"></div>
         <div id="stas">
-          <div id="stas-top">
-            <p>车站编辑</p>
-            <button type="button" class="layui-btn" onclick="new_sta()">
-              添加
-            </button>
+          <div class="layui-tabs layui-tabs-card layui-panel layui-inline" id="lines" lay-options="{closable:true,headerMode:'scroll'}">
+            <ul class="layui-tabs-header" id="toolbar-header">
+              <button type="button" class="layui-btn" onclick="new_sta()">添加站点</button>
+              <button type="button" class="layui-btn" onclick="new_branch()">添加支线</button>
+              <li lay-id="main" lay-closable="false">主线</li>
+              <li lay-id="b1" class="toolbar-branches">支线1</li>
+              <li lay-id="b2" class="toolbar-branches">支线2</li>
+            </ul>
+            <div class="layui-tabs-body" id="toolbar-body">
+              <div class="layui-tabs-item"></div>
+              <div class="layui-tabs-item"></div>
+              <div class="layui-tabs-item">
+                <!-- 主线 -->
+                <table class="layui-table">
+                  <thead>
+                    <tr>
+                      <th>中文</th>
+                      <th>英文</th>
+                      <th>编号</th>
+                      <th>换乘</th>
+                    </tr>
+                  </thead>
+                  <tbody id="stations"></tbody>
+                </table>
+              </div>
+              <div class="layui-tabs-item id-is-branch">
+                <!-- 支线1 -->
+                支线1
+              </div>
+              <div class="layui-tabs-item id-is-branch">
+                <!-- 支线2 -->
+                支线2
+              </div>
+            </div>
           </div>
-          <table id="stas-table" class="layui-table">
-            <thead>
-              <tr>
-                <th>中文</th>
-                <th>英文</th>
-                <th>编号</th>
-                <th>换乘</th>
-              </tr>
-            </thead>
-            <tbody id="stations"></tbody>
-          </table>
         </div>
       </div>
       <div id="style1" class="layui-form">
@@ -150,6 +168,12 @@
         </div>
         <div class="layui-form-item">
           <div class="layui-input-group">
+            <div class="layui-input-split layui-input-prefix">线条粗细</div>
+            <input type="number" id="line_width" min="4" max="10" class="layui-input" />
+          </div>
+        </div>
+        <div class="layui-form-item">
+          <div class="layui-input-group">
             <div class="layui-input-split layui-input-prefix">线路编号</div>
             <input type="text" id="name2" class="layui-input" />
           </div>
@@ -210,6 +234,10 @@
     </div>
     <div id="new_sta_dialog" style="display: none; padding: 15px">
       <div class="layui-form">
+        <div class="layui-form-item">
+          <label>车站将添加于</label>
+          <b id="where_to_add">主线</b>
+        </div>
         <div class="layui-form-item">
           <label>选择车站添加位置:</label>
           <select id="stas-choose" lay-search="{fuzzy: false}">

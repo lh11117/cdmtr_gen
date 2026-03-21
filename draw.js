@@ -167,9 +167,11 @@ async function generate(data) {
         }
     }
     if(data.b_width!=0){
+        var r=data.line_width;
+        var r_4=r-4;
         draw.rect(data.b_width,data.height).fill('#fff').stroke({width:1,color:'#000'}).move(data.a_width,0);
         x=data.a_width+data.b_width/2,y=barY;
-        draw.rect(data.b_width-data.margin,8).center(x,y).fill(data.color).radius(4);
+        draw.rect(data.b_width-data.margin,r*2).center(x,y).fill(data.color).radius(r);
         var interchange_color=null;
         if(data.to_left==data.left_door)stations=stations.reverse();
         stations.every(function(item){if(item.interchange){interchange_color=item.interchange[0][1]};return interchange_color==null;});
@@ -182,8 +184,9 @@ async function generate(data) {
         x=data.a_width+data.margin/2;
         var ww=0;
         var pass=false;
-        var rect=draw.rect(0,8).fill('#a3a3a3').stroke({width:0.15,color:'#a3a3a3'});
-        var rect2=draw.rect(8,8).radius(4).fill('#a3a3a3').stroke({width:0.15,color:'#a3a3a3'});
+        var rect=draw.rect(0,r*2).fill('#a3a3a3').stroke({width:0.15,color:'#a3a3a3'});
+        var rect2=draw.rect(r*2,r*2).radius(r).fill('#a3a3a3').stroke({width:0.15,color:'#a3a3a3'});
+        var rect_15=draw.rect(0,r*2).fill(data.color).stroke({width:0.15,color:data.color});
         stations.forEach(i=>{
             if(!data.left_door&&i.key!=data.selected)pass=!pass;
             if(pass)ww+=(data.b_width-data.margin-30)/(stations.length-1);
@@ -206,26 +209,26 @@ async function generate(data) {
             }
             const group=draw.group();
             var color_text=pass?"#a5a5a5":(i.key==data.selected?(data.new?"#fff":data.color):"#3e3a39");
-            var b1=textalign(group.text(i.name[1]).font({family:flt,size:4,anchor:'left',fill:color_text}),x+18,y-5,'left','bottom');
+            var b1=textalign(group.text(i.name[1]).font({family:flt,size:4,anchor:'left',fill:color_text}),x+18,y-5-r_4,'left','bottom');
             var h=b1.bbox().height;
-            var b2=textalign(group.text(i.name[0]).font({family:'微软雅黑',size:7,anchor:'left',fill:color_text}),x+18,y-5-h,'left','bottom');
+            var b2=textalign(group.text(i.name[0]).font({family:'微软雅黑',size:7,anchor:'left',fill:color_text}),x+18,y-5-h-r_4,'left','bottom');
             if(i.no_serve){
                 var w=Math.max(b1.bbox().w,b2.bbox().w);
-                w+=textalign(group.text('(').font({family:'微软雅黑',size:10,anchor:'left',fill:color_text}),x+18+1+w,y-5,'left','bottom').bbox().width+1;
-                var b114=textalign(group.text('Not yet in service').font({family:flt,size:4,anchor:'left',fill:color_text}),x+18+1+w,y-5,'left','bottom');
+                w+=textalign(group.text('(').font({family:'微软雅黑',size:10,anchor:'left',fill:color_text}),x+18+1+w,y-5-r_4,'left','bottom').bbox().width+1;
+                var b114=textalign(group.text('Not yet in service').font({family:flt,size:4,anchor:'left',fill:color_text}),x+18+1+w,y-5-r_4,'left','bottom');
                 var b1919=group.text('暂未开通').font({family:'微软雅黑',size:6,anchor:'left',fill:color_text});
-                textalign(b1919,x+18+1+w+(b114.bbox().width-b1919.bbox().width)/2,y-4-b114.bbox().height,'left','bottom');
-                textalign(group.text(')').font({family:'微软雅黑',size:10,anchor:'left',fill:color_text}),x+18+1+w+b114.bbox().width+1,y-5,'left','bottom');
+                textalign(b1919,x+18+1+w+(b114.bbox().width-b1919.bbox().width)/2,y-4-b114.bbox().height-r_4,'left','bottom');
+                textalign(group.text(')').font({family:'微软雅黑',size:10,anchor:'left',fill:color_text}),x+18+1+w+b114.bbox().width+1,y-5-r_4,'left','bottom');
             }
             if(i.key==data.selected&&data.new){
                 var pad=3;
                 var [_path,E]=buildPath({x:0,y:0,h:group.bbox().height+pad,w:group.bbox().width});
                 var xx=x+18-(group.bbox().height+pad/2)/Math.sin(48*Math.PI/180);
-                var yy=y-3.7;
+                var yy=y-3.7-r_4;
                 textalign(path.plot(_path).fill(data.color),xx,yy,'left','bottom');
                 rect3.size(group.bbox().height+pad,group.bbox().height+pad).radius((group.bbox().height+pad)/2).center(E[0]+x+18+1,-E[1]+yy+1).fill(data.color);
             }
-            group.rotate(-48,x+18,y-5);
+            group.rotate(-48,x+18,y-5-r_4);
             if(i.interchange){
                 if(i.interchange.length==1)y_+=interchange2(draw,x+16.25,y+6,[data.color,i.interchange[0][1]],'right');
                 else y_+=interchange3(draw,x+16.25,y+6,[data.color,i.interchange[0][1],i.interchange[1][1]],'right');
@@ -239,10 +242,15 @@ async function generate(data) {
             if(pass==false)pass=i.key==data.selected;
             x+=(data.b_width-data.margin-30)/(stations.length-1);
         });
-        ww+=15/4*3-0.5;
-        if(data.new)ww-=5;
-        rect.size(ww,8).move(data.left_door?data.a_width+data.b_width-ww-4-data.margin/2:data.a_width+data.margin/2+4,y-4);
-        rect2.move(data.left_door?data.a_width+data.b_width-data.margin/2-8:data.a_width+data.margin/2,y-4);
+        ww+=15/r*3-0.5;
+        if(data.new)ww-=5-0.5*(r_4)*Math.sin(48*Math.PI/180);
+        /////////////////////////////// 警告：bug
+        console.log(ww);
+        if(ww>0)rect.size(ww,r*2).move(data.left_door?data.a_width+data.b_width-ww-r-data.margin/2:data.a_width+data.margin/2+r,y-r);
+        if(ww<r){
+            rect_15.size(data.b_width-r*2-data.margin-ww,r*2).move(data.left_door?data.a_width+data.margin/2+r:data.a_width-+data.margin/2+r,y-r);
+        }
+        rect2.move(data.left_door?data.a_width+data.b_width-data.margin/2-r*2:data.a_width+data.margin/2,y-r);
     }
     document.querySelector("#draw>svg").style.width=(data.a_width+data.b_width)*data.scale+'px';
     document.querySelector("#draw>svg").style.height=(data.height)*data.scale+'px';

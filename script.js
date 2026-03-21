@@ -78,15 +78,18 @@ document.getElementsByName("btn-style").forEach(e=>{
 })
 
 function new_file(){
+    // 用链表太难受了，但是现在也不好改了，呜呜呜，只能继续用链表
     data = {
         name: ["2号线", "Line 2", "02"],
         color: "#EB5A35",
         stations: {},
+        branches: [],
         to_left: true,
         left_door: true,
         a_width: 600,
         height: 200,
         b_width: 600,
+        line_width: 4,
         a_top: 50,
         margin: 70,
         scale: 2,
@@ -97,11 +100,25 @@ function new_file(){
     var rand2=Math.floor(Math.random()*114514);
     var rand3=Math.floor(Math.random()*114514);
     var s1=generate_randstr(),s2=generate_randstr(),s3=generate_randstr();
+    var s4=generate_randstr(),s5=generate_randstr();
     data.start=s1;
     data.end=s3;
     data.stations[s1]={name:['新站点'+rand1,'New Station '+rand1],next:[s2],id:"01"};
     data.stations[s2]={name:['新站点'+rand2,'New Station '+rand2],back:[s1],next:[s3],id:"02"};
     data.stations[s3]={name:['新站点'+rand3,'New Station '+rand3],back:[s2],id:"03"};
+    // data.stations[s4]={name:["站点 114","Station 114"],id:"Y1",next:[s5]};
+    // data.stations[s5]={name:["站点 514","Station 514"],id:"Y2",interchange:[['1','#467854']],back:[s4]};
+    // // 支线测试begin
+    // var rand_s=generate_randstr()
+    // data.branches.push({
+    //     id:rand_s,
+    //     name: "机场支线",
+    //     start:s2,
+    //     first:s4,
+    //     last:s5,
+    //     end:'__end',
+    // })
+    // // 支线测试end
     data.selected=s1;
     reset();
 }
@@ -115,12 +132,67 @@ document.getElementsByName("btn-new").forEach(e=>{
                 btn: ['确定', '取消'],
                 btn1: (index)=>{
                     new_file();
+                    load_branches(data);
                     load(data);
                     layer.close(index);
                 }
             });
     });
 });
+
+function create_ele(tag,text='',attr={}){
+    var ele=document.createElement(tag);
+    ele.innerText=text;
+    for(let k in attr){
+        ele.setAttribute(k,attr[k]);
+    }
+    return ele;
+}
+
+function new_branch(){
+    layer.alert("开发中，尽情期待！");
+}
+
+function load_branch(data,id){
+    var branch=null;
+    data.branches.forEach(e=>{
+        if(e.id==id)branch=e;
+    });
+    if(!branch)return false;
+    var tb=document.getElementById('stations_'+id);
+    return true;
+}
+
+function load_branches(data){
+    document.querySelectorAll("#toolbar-header>li.toolbar-branches").forEach(e=>{e.remove();});
+    document.querySelectorAll("#toolbar-body>div.layui-tabs-item.id-is-branch").forEach(e=>{e.remove();});
+    var header=document.getElementById("toolbar-header");
+    var body=document.getElementById("toolbar-body");
+    data.branches.forEach(b=>{
+        var l=document.createElement('li');
+        l.setAttribute('lay-id',"branch_"+b.id);
+        l.classList.add("toolbar-branches");
+        l.innerText=b.name;
+        header.appendChild(l);
+        var d=document.createElement('div');
+        d.classList.add('layui-tabs-item');
+        d.classList.add('id-is-branch');
+        var tb=document.createElement('table');
+        tb.classList.add('layui-table');
+        var th=document.createElement('thead');
+        var tr=document.createElement('tr');
+        tr.appendChild(create_ele('th','中文'));
+        tr.appendChild(create_ele('th','英文'));
+        tr.appendChild(create_ele('th','编号'));
+        tr.appendChild(create_ele('th','换乘'));
+        th.appendChild(tr);
+        tb.appendChild(th);
+        tb.appendChild(create_ele('tbody','',{id:'stations_'+b.id}));
+        d.append(tb);
+        body.appendChild(d);
+        load_branch(data,b.id);
+    });
+}
 
 document.getElementsByName("btn-import").forEach(e=>{
     e.addEventListener('click',()=>{
@@ -137,6 +209,8 @@ document.getElementsByName("btn-import").forEach(e=>{
                         if(file.type!=='application/json'&&!file.name.toLowerCase().endsWith('.json')){layer.alert('请选择 JSON 文件');return;}
                         const text=await file.text();
                         data=JSON.parse(text);
+                        if(!data.line_width)data.line_width=4;
+                        load_branches(data);
                         update(data);
                         reset();
                     };
@@ -205,11 +279,17 @@ function getLines(city,keywords,ok=(e)=>{},no=(_,__,___)=>{}){
 }
 
 $('#read-lines-search').on('click',()=>{
-    var loadIndex = layer.msg('加载中', {
+    var loadIndex=layer.msg('加载中 <button type="button" class="layui-btn layui-btn-sm" id="cancel_load">取消加载</button>', {
         icon: 16,
         shade: 0.1
     });
+    var canceled=false;
+    document.getElementById('cancel_load').onclick=()=>{
+        canceled=true;
+        layer.close(loadIndex);
+    };
     getLines(document.getElementById('read-city-name').value,document.getElementById('read-line-name').value,function (r) {
+        if(canceled)return;
         if(r.status=='1'){
             layer.close(loadIndex);
             buslines=r.buslines;
@@ -225,7 +305,7 @@ $('#read-lines-search').on('click',()=>{
         }
     },function (xhr, status, error) {
         layer.close(loadIndex);
-        layer.alert("获取失败! ");
+        layer.alert("获取失败! 因为服务器出问题了。请联系作者: QQ 1306425714");
         console.error("Error occurred:", status, error);
     });
 });
@@ -282,7 +362,7 @@ function new_sta(){
     }
 }
 
-function generate_randstr(length=8) {
+function generate_randstr(length=5) {
   const chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-';
   let result='';
   for(let i=0;i<length;i++){
@@ -326,7 +406,9 @@ function moveDown(arr,index) {
 }
 
 var dev=false;
+var agree=false;
 if(location.href=='http://127.0.0.1:5500/index.html'){
+    load_branches(data);
     load(data);
     dev=true;
     var t_=document.getElementsByTagName('title')[0];
@@ -336,7 +418,7 @@ if(location.href=='http://127.0.0.1:5500/index.html'){
         {
             closeBtn:0,
             btn:['我已认真阅读并同意以上内容','我不同意以上内容'],
-            btn1:(index)=>{layer.close(index);load(data);},
+            btn1:(index)=>{agree=true;layer.close(index);load_branches(data);load(data);},
             btn2:()=>{dev=true;window.location.href = 'about:blank;'}
         })
 }
@@ -501,10 +583,25 @@ function load_sta(elem){
 
 document.getElementsByName("btn-about").forEach(e=>{
     e.addEventListener("click",()=>{
-        window.open('https://space.bilibili.com/3546630506678721');
+        layer.alert('作者: <a href="https://space.bilibili.com/3546630506678721" target="_blank">bilibili@成都地铁S11德阳线</a><br>Github: <a href="https://github.com/lh11117/crt_gen" target="_blank">https://github.com/lh11117/crt_gen</a>');
     });
 });
 
+
+// tabs
+function tabs(){
+    layui.tabs.on('afterChange(lines)', function(data) {
+        document.getElementById('where_to_add').innerText=this.innerText;
+    });
+    layui.tabs.on(`beforeClose(lines)`, function(data) {
+        layer.confirm(`确定要<b style="color:red;">删除支线</b>「${this.innerText}」吗？<b style="color:red;">这无法恢复！</b>`, function(i) {
+            tabs.close(lines, data.index, true);
+            layer.close(i);
+        });
+        return false;
+    });
+}
+tabs();
 
 
 function load(data){
@@ -550,6 +647,7 @@ function reset(){
     scale.value=data.scale;
     a_width.value=data.a_width;
     b_width.value=data.b_width;
+    line_width.value=data.line_width;
     height.value=data.height;
     margin.value=data.margin;
     a_top.value=data.a_top;
@@ -575,6 +673,7 @@ function UpdateInfo(){
         data.scale=parseFloat(scale.value);
         data.a_width=parseInt(a_width.value,10);
         data.b_width=parseInt(b_width.value,10);
+        data.line_width=parseInt(line_width.value,10);
         data.height=parseInt(height.value,10);
         data.margin=parseInt(margin.value,10);
         data.a_top=parseInt(a_top.value,10);
@@ -634,4 +733,4 @@ document.getElementsByName('btn-export').forEach(e=>{
     });
 });
 
-window.addEventListener('beforeunload',(e)=>{if(!dev){e.preventDefault();e.returnValue='';}});
+window.addEventListener('beforeunload',(e)=>{if(!dev){if(agree){e.preventDefault();e.returnValue='';}}});
