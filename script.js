@@ -216,9 +216,13 @@ document.getElementsByName("btn-import").forEach(e=>{
                         const text=await file.text();
                         data=JSON.parse(text);
                         if(!data.line_width)data.line_width=4;
-                        load_branches(data);
-                        update(data);
-                        reset();
+                        try{
+                            load_branches(data);
+                            update(data);
+                            reset();
+                        }catch(e){
+                            layer.alert("加载错误, 请联系作者! 最好附上项目文件<br>错误信息: " + e.stack)
+                        }
                     };
                     input.click();
                     layer.close(index);
