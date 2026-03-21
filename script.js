@@ -154,6 +154,9 @@ function new_branch(){
 }
 
 function load_branch(data,id){
+    if(!data.branches){
+        return;
+    }
     var branch=null;
     data.branches.forEach(e=>{
         if(e.id==id)branch=e;
@@ -168,6 +171,9 @@ function load_branches(data){
     document.querySelectorAll("#toolbar-body>div.layui-tabs-item.id-is-branch").forEach(e=>{e.remove();});
     var header=document.getElementById("toolbar-header");
     var body=document.getElementById("toolbar-body");
+    if(!data.branches){
+        return;
+    }
     data.branches.forEach(b=>{
         var l=document.createElement('li');
         l.setAttribute('lay-id',"branch_"+b.id);
