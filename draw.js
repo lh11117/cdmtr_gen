@@ -121,9 +121,9 @@ async function generate(data) {
         var g1=draw.group();
         textalign(g1.text(data.stations[data.selected].name[1]).fill(black).font({family:flt,size:13,anchor:'middle'}),x,y,'center','top');
         y+=g1.bbox().height+10;
-        draw.rect(data.a_width-data.margin,8).center(x,y+10).fill(data.color).radius(4);
+        draw.rect(data.a_width-data.margin,data.line_width*2).center(x,y+10).fill(data.color).radius(data.line_width);
         barY=y+10;
-        textalign(draw.rect((data.a_width-data.margin)/2,8).fill('#a3a3a3').stroke({width:0.15,color:'#a3a3a3'}).radius(4),x,y+10,!data.left_door?'right':'left','center');
+        textalign(draw.rect((data.a_width-data.margin)/2,data.line_width*2).fill('#a3a3a3').stroke({width:0.15,color:'#a3a3a3'}).radius(data.line_width),x,y+10,!data.left_door?'right':'left','center');
         draw.rect(50, 20).center(x,y+10).fill('#fff').radius(10).stroke({width:1,color:data.color});
         draw.path([['M',x,y],['L',x,y+20]]).stroke({width:1,color:data.color});
         var ft=13;
@@ -243,7 +243,7 @@ async function generate(data) {
             x+=(data.b_width-data.margin-30)/(stations.length-1);
         });
         ww+=15/r*3-0.5;
-        if(data.new)ww-=5-0.5*(r_4)*Math.sin(48*Math.PI/180);
+        if(data.new)ww-=5-0.5*(r_4);
         /////////////////////////////// 警告：bug
         console.log(ww);
         if(ww>0)rect.size(ww,r*2).move(data.left_door?data.a_width+data.b_width-ww-r-data.margin/2:data.a_width+data.margin/2+r,y-r);
