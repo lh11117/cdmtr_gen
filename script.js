@@ -347,6 +347,31 @@ $('#number-station').on('click',()=>{
     document.querySelector('#number-station-dialog>div>button.btn_cancel').onclick=()=>{layer.close(index);};
 });
 
+$('#reverse-station').on('click',()=>{
+    var index=layer.confirm('确定要反转线路吗? ',{btn:['确定','取消'],btn1:()=>{
+        for (let k in data.stations){
+            if(!data.stations[k].back){
+                data.stations[k].back=data.stations[k].next;
+                delete data.stations[k].next;
+            }else if(!data.stations[k].next){
+                data.stations[k].next=data.stations[k].back;
+                delete data.stations[k].back;
+            }else{
+                var t=data.stations[k].next;
+                data.stations[k].next=data.stations[k].back;
+                data.stations[k].back=t;
+            }
+        }
+        ////
+        var s=data.start;
+        data.start=data.end;
+        data.end=s;
+        ////
+        load(data);
+        layer.close(index);
+    },btn2:()=>{layer.close(index);}});
+});
+
 var nindex=-1;
 function new_sta(){
     document.getElementById('stas-choose').innerHTML='<option value="__start">开头</option><option value="__end" selected>末尾</option>';
