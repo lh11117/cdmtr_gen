@@ -230,13 +230,15 @@ async function generate(data) {
             }
             group.rotate(-48,x+18,y-5-r_4);
             if(i.interchange){
-                if(i.interchange.length==1)y_+=interchange2(draw,x+16.25,y+6,[data.color,i.interchange[0][1]],'right');
-                else y_+=interchange3(draw,x+16.25,y+6,[data.color,i.interchange[0][1],i.interchange[1][1]],'right');
+                y_+=r_4;
+                if(i.interchange.length==1)y_+=interchange2(draw,x+16.25,y+6+r_4,[data.color,i.interchange[0][1]],'right');
+                else y_+=interchange3(draw,x+16.25,y+6+r_4,[data.color,i.interchange[0][1],i.interchange[1][1]],'right');
                 i.interchange.forEach(j=>{
                     y_+=14;
                     draw.rect(12,12).center(x+15,y_).radius(6).fill(j[1]);
                     draw.text(j[0]).font({family:flt,size:7,anchor:'middle',fill:"#fff"}).center(x+15,y_);
-                })
+                });
+                y_-=r_4;
             }
             if(!data.left_door&&i.key!=data.selected)pass=!pass;
             if(pass==false)pass=i.key==data.selected;
