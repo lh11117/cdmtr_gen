@@ -32,6 +32,7 @@ function getColor() {
         palette.forEach((e,i)=>{
             var option=document.createElement('option');
             option.innerText=`${e.name['zh-Hans'].split('/')[0]} ${e.name.en.split('/')[0]}`;
+            option.innerHTML+=`<div style="color:${palette[i].colour} !important;background-color:${palette[i].colour}">${palette[i].colour}</div>`;
             if(i==0){
                 option.selected='selected';
                 d=e;
@@ -634,6 +635,17 @@ function tabs(){
             layer.close(i);
         });
         return false;
+    });
+    layui.tabs.on(`beforeChange(lines)`, function(data) {
+        if(data.to.index==0){
+            new_sta();
+            return false;
+        }
+        if(data.to.index==1){
+            new_branch();
+            return false;
+        }
+        return true;
     });
 }
 tabs();

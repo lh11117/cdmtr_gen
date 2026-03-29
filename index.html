@@ -46,17 +46,21 @@
       <div id="left">
         <div id="draw"></div>
         <div id="stas">
-          <div class="layui-tabs layui-tabs-card layui-panel layui-inline" id="lines" lay-options="{closable:true,headerMode:'scroll'}">
+          <div class="layui-tabs layui-tabs-card layui-panel layui-inline" id="lines" lay-options="{closable:true,headerMode:'scroll',index:2}">
             <ul class="layui-tabs-header" id="toolbar-header">
-              <button type="button" class="layui-btn" onclick="new_sta()">添加站点</button>
-              <button type="button" class="layui-btn" onclick="new_branch()">添加支线</button>
+              <li lay-id="new_sta" lay-closable="false">添加站点</li>
+              <li lay-id="new_branch" lay-closable="false">添加支线</li>
               <li lay-id="main" lay-closable="false">主线</li>
               <li lay-id="b1" class="toolbar-branches">支线1</li>
               <li lay-id="b2" class="toolbar-branches">支线2</li>
             </ul>
-            <div class="layui-tabs-body" id="toolbar-body">
-              <div class="layui-tabs-item"></div>
-              <div class="layui-tabs-item"></div>
+              <div class="layui-tabs-body" id="toolbar-body">
+              <div class="layui-tabs-item">
+                <button type="button" class="layui-btn" onclick="new_sta()">添加站点——如果唤起弹窗失败，请点我</button>
+              </div>
+              <div class="layui-tabs-item">
+                <button type="button" class="layui-btn" onclick="new_branch()">添加支线——如果唤起弹窗失败，请点我</button>
+              </div>
               <div class="layui-tabs-item">
                 <!-- 主线 -->
                 <table class="layui-table">
