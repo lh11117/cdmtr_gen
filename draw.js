@@ -188,6 +188,39 @@ async function generate(data) {
         var rect2=draw.rect(r*2,r*2).radius(r).fill('#a3a3a3').stroke({width:0.15,color:'#a3a3a3'});
         var rect_15=draw.rect(0,r*2).fill(data.color).stroke({width:0.15,color:data.color});
         stations.forEach(i=>{
+            // Calculate dimensions for the loop line rectangle
+        var loopHeight = 0;
+        var loopWidth = 0;
+
+        // Calculate based on station count and text length
+        var stationCount = stations.length;
+var maxNameLength = 0;
+stations.forEach(function(station) {
+    var nameLen = station.name[0].length;
+    if (nameLen > maxNameLength) maxNameLength = nameLen;
+});
+
+// Dynamic sizing logic
+loopHeight = Math.max(40, stationCount * 10 + 20);
+loopWidth = Math.max(60, maxNameLength * 10 + 30);
+
+// Draw rounded rectangle with corner radius = height/2
+var loopRect = draw.rect(loopWidth, loopHeight)
+    .radius(loopHeight / 2)
+    .fill('none')
+    .stroke({ width: 2, color: data.color })
+    .move(data.a_width + data.b_width / 2 - loopWidth / 2, data.height / 2 - loopHeight / 2);
+
+// Add label text inside the rectangle
+draw.text('Loop Line')
+    .font({ family: 'FrutigerLT55Roman', size: 12, anchor: 'middle', fill: data.color })
+    .center(data.a_width + data.b_width / 2, data.height / 2);
+
+// Optional: Add Chinese label
+draw.text('环线')
+    .font({ family: '微软雅黑', size: 12, anchor: 'middle', fill: data.color })
+    .center(data.a_width + data.b_width / 2, data.height / 2 + 16);
+            
             if(!data.left_door&&i.key!=data.selected)pass=!pass;
             if(pass)ww+=(data.b_width-data.margin-30)/(stations.length-1);
             var y_=y;
