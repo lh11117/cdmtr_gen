@@ -188,6 +188,147 @@ async function generate(data) {
         var rect2=draw.rect(r*2,r*2).radius(r).fill('#a3a3a3').stroke({width:0.15,color:'#a3a3a3'});
         var rect_15=draw.rect(0,r*2).fill(data.color).stroke({width:0.15,color:data.color});
         stations.forEach(i=>{
+        // Calculate dimensions for the loop line rectangle
+var loopHeight = 0;
+var loopWidth = 0;
+
+// Calculate based on station count and text length
+var stationCount = stations.length;
+var maxNameLength = 0;
+stations.forEach(function(station) {
+    var nameLen = station.name[0].length;
+    if (nameLen > maxNameLength) maxNameLength = nameLen;
+});
+
+// Dynamic sizing logic
+loopHeight = Math.max(40, stationCount * 10 + 20);
+loopWidth = Math.max(60, maxNameLength * 10 + 30);
+
+// Draw rounded rectangle with corner radius = height/2
+var loopRect = draw.rect(loopWidth, loopHeight)
+    .radius(loopHeight / 2)
+    .fill('none')
+    .stroke({ width: 2, color: data.color })
+    .move(data.a_width + data.b_width / 2 - loopWidth / 2, data.height / 2 - loopHeight / 2);
+
+// Add label text inside the rectangle
+draw.text('Loop Line')
+    .font({ family: 'FrutigerLT55Roman', size: 12, anchor: 'middle', fill: data.color })
+    .center(data.a_width + data.b_width / 2, data.height / 2);
+
+// Optional: Add Chinese label
+draw.text('环线')
+    .font({ family: '微软雅黑', size: 12, anchor: 'middle', fill: data.color })
+    .center(data.a_width + data.b_width / 2, data.height / 2 + 16);
+            // Calculate station positions for the loop line
+var stationPositions = [];
+var loopCenterX = data.a_width + data.b_width / 2;
+var loopCenterY = data.height / 2;
+
+// Use the already calculated loopHeight and loopWidth
+var radiusX = loopWidth / 2;
+var radiusY = loopHeight / 2;
+
+// Distribute stations evenly along the loop path
+stations.forEach(function(station, index) {
+    var angle = (index / stations.length) * 2 * Math.PI - Math.PI / 2;
+    var posX = loopCenterX + radiusX * Math.cos(angle);
+    var posY = loopCenterY + radiusY * Math.sin(angle);
+    
+    stationPositions.push({
+        key: station.key,
+        x: posX,
+        y: posY,
+        angle: angle
+    });
+});
+
+// Draw station dots on the loop
+stationPositions.forEach(function(pos, index) {
+    var station = stations[index];
+    var isSelected = (station.key === data.selected);
+    
+    // Draw station circle
+    var dot = draw.circle(8)
+        .center(pos.x, pos.y)
+        .fill(isSelected ? data.color : '#fff')
+        .stroke({ width: 2, color: data.color });
+    
+    // Draw station name (offset based on angle)
+    var offsetX = 12 * Math.cos(pos.angle);
+    var offsetY = 12 * Math.sin(pos.angle);
+    var textX = pos.x + offsetX;
+    var textY = pos.y + offsetY;
+    
+    // Determine text alignment based on position
+    var align = 'middle';
+    if (pos.angle > -Math.PI/4 && pos.angle < Math.PI/4) align = 'left';
+    else if (pos.angle > 3*Math.PI/4 || pos.angle < -3*Math.PI/4) align = 'right';
+    else align = 'middle';
+    
+    draw.text(station.name[0])
+        .font({ family: '微软雅黑', size: 9, anchor: align })
+        .fill(isSelected ? data.color : '#333')
+        .move(textX, textY);
+});
+
+// Connect stations with path along the loop
+var pathData = ['M'];
+stationPositions.forEach(function(pos, index) {
+    if (index === 0) {
+        pathData.push(pos.x, pos.y);
+    } else {
+        pathData.push('L', pos.x, pos.y);
+    }
+});
+// Close the loop
+pathData.push('Z');
+
+draw.path(pathData)
+    .stroke({ width: 2, color: data.color })
+    .fill('none');
+
+// Add direction arrows on the loop
+var arrowCount = 4;
+for (var i = 0; i < arrowCount; i++) {
+    var angle = (i / arrowCount) * 2 * Math.PI;
+    var arrowX = loopCenterX + radiusX * 0.7 * Math.cos(angle);
+    var arrowY = loopCenterY + radiusY * 0.7 * Math.sin(angle);
+    
+    var arrowAngle = angle + Math.PI / 4;
+    draw.polygon([
+        [arrowX + 8 * Math.cos(arrowAngle), arrowY + 8 * Math.sin(arrowAngle)],
+        [arrowX - 5 * Math.cos(arrowAngle - 0.5), arrowY - 5 * Math.sin(arrowAngle - 0.5)],
+        [arrowX - 5 * Math.cos(arrowAngle + 0.5), arrowY - 5 * Math.sin(arrowAngle + 0.5)]
+    ]).fill(data.color);
+}
+
+// Add connection lines between loop and main line
+var selectedPos = stationPositions.find(function(p) { 
+    return p.key === data.selected; 
+});
+
+if (selectedPos) {
+    // Draw connection from selected station to main line
+    var mainLineY = data.a_top + 60; // approximate main line Y position
+    draw.line(
+        selectedPos.x, selectedPos.y,
+        selectedPos.x, mainLineY
+    ).stroke({ width: 1.5, color: data.color, dasharray: '4,4' });
+    
+    // Add transfer indicator
+    draw.text('Transfer')
+        .font({ family: 'FrutigerLT55Roman', size: 8, anchor: 'middle' })
+        .fill(data.color)
+        .center(selectedPos.x + 20, (selectedPos.y + mainLineY) / 2)
+        .rotate(-90);
+}
+
+// Calculate and display total loop length
+var totalLength = 2 * Math.PI * Math.sqrt((radiusX * radiusX + radiusY * radiusY) / 2);
+draw.text('Loop length: ~' + Math.round(totalLength) + 'px')
+    .font({ family: 'FrutigerLT55Roman', size: 8, anchor: 'middle', fill: '#999' })
+    .center(loopCenterX, loopCenterY + loopHeight/2 + 20);
             if(!data.left_door&&i.key!=data.selected)pass=!pass;
             if(pass)ww+=(data.b_width-data.margin-30)/(stations.length-1);
             var y_=y;
