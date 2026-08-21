@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Railmap 数据结构转换工具</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:#f4f6f8;color:#222}
+.wrap{max-width:1100px;margin:28px auto;padding:0 18px}.card{background:#fff;border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 3px 16px #00000012}
+h1{margin:0 0 8px;font-size:25px}h2{font-size:18px;margin:0 0 12px}.muted{color:#666;font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.full{grid-column:1/-1}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}input,select,textarea{width:100%;padding:10px;border:1px solid #d6dbe1;border-radius:8px;font:inherit}
+textarea{min-height:210px;font-family:Consolas,monospace;font-size:12px}
+button{border:0;border-radius:8px;padding:10px 15px;cursor:pointer;font-weight:600;margin-right:8px}
+.primary{background:#222;color:#fff}.secondary{background:#e9edf1;color:#222}.danger{background:#ffe7e7;color:#a00}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.status{padding:10px;border-radius:8px;background:#f1f4f6;font-size:13px;white-space:pre-wrap}
+#preview{max-height:360px;overflow:auto;background:#111;color:#eee;padding:14px;border-radius:8px;font:12px/1.5 Consolas,monospace}
+.ok{background:#e8f7ec;color:#176b2c}.err{background:#fff0f0;color:#a00000}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<h1>Railmap 数据结构转换工具</h1>
+<div class="muted">将 Railmap 的新版/导出型 <code>stn_list</code> 结构转换成旧版/简化型 <code>stations</code> 结构。</div>
+</div>
+
+<div class="card">
+<h2>1. 输入文件</h2>
+<div class="row">
+<input id="file" type="file" accept=".json,application/json" style="max-width:420px">
+<button class="secondary" id="loadSample">载入示例结构</button>
+</div>
+<br>
+<textarea id="input" placeholder="把 JSON 粘贴到这里，或选择 JSON 文件……"></textarea>
+</div>
+
+<div class="card">
+<h2>2. 转换参数</h2>
+<div class="grid">
+<div>
+<label>起点站（输出 start）</label>
+<select id="start"></select>
+</div>
+<div>
+<label>终点站（输出 end）</label>
+<select id="end"></select>
+</div>
+<div>
+<label>线路名称（可自动识别）</label>
+<input id="lineName">
+</div>
+<div>
+<label>线路颜色（可自动识别）</label>
+<input id="lineColor" type="text" placeholder="#71CC98">
+</div>
+<div>
+<label>站名英文缺失时的默认值</label>
+<input id="defaultEn" value="Station">
+</div>
+<div>
+<label>to_left</label>
+<select id="toLeft"><option value="auto">自动</option><option value="true">true</option><option value="false">false</option></select>
+</div>
+</div>
+<br>
+<div class="muted">起点/终点很重要：工具会沿着 parents/children 图关系，从起点走到终点，并按这个方向重新编号。因此输入文件里的 linestart / lineend 不会强制决定输出方向。</div>
+</div>
+
+<div class="card">
+<h2>3. 转换</h2>
+<button class="primary" id="convert">转换</button>
+<button class="secondary" id="download" disabled>下载转换后的 JSON</button>
+<div id="status" class="status" style="margin-top:12px">等待输入。</div>
+</div>
+
+<div class="card">
+<h2>输出预览</h2>
+<pre id="preview">{}</pre>
+</div>
+</div>
+
+<script>
+let source=null, result=null;
+
+const $=id=>document.getElementById(id);
+const sample={
+  "style":"gzmtr","direction":"l",
+  "theme":["guangzhou","gz9","#71CC98","#000"],
+  "line_name":["9号线","Line 9"],
+  "stn_list":{
+    "linestart":{"num":"00","parents":[],"children":["a"],"localisedName":{"zh":"起点","en":"Start"}},
+    "a":{"num":"01","parents":["linestart"],"children":["b"],"localisedName":{"zh":"甲站","en":"Jia"}},
+    "b":{"num":"02","parents":["a"],"children":["c"],"localisedName":{"zh":"乙站","en":"Yi"}},
+    "c":{"num":"03","parents":["b"],"children":["lineend"],"localisedName":{"zh":"丙站","en":"Bing"}},
+    "lineend":{"num":"00","parents":["c"],"children":[],"localisedName":{"zh":"终点","en":"End"}}
+  }
+};
+
+$("file").addEventListener("change", async e=>{
+  const f=e.target.files[0]; if(!f)return;
+  try{ load(JSON.parse(await f.text())); $("status").textContent="已读取文件。"; $("status").className="status ok"; }
+  catch(err){showErr("JSON 解析失败："+err.message);}
+});
+$("loadSample").onclick=()=>load(sample);
+
+function load(d){
+  source=d;
+  if(!d || typeof d!=="object" || !d.stn_list) throw new Error("没有找到 stn_list，当前工具要求输入为第二种结构。");
+  const list=d.stn_list;
+  const stations=Object.entries(list).filter(([k,v])=>k!=="linestart"&&k!=="lineend"&&v?.localisedName?.zh);
+  $("lineName").value=(d.line_name?.[0]||"");
+  $("lineColor").value=(d.theme?.[2]||"");
+  fillSelect(stations);
+  const ends=findEndpoints(list);
+  if(ends.length>=2){
+    // 优先保留用户提示中这种“实际线路方向”无法由源结构可靠判断的情况：
+    // 默认选择图的两个端点，若有 linestart/lineend 则按 linestart -> lineend。
+    const first=(list.linestart?.children||[]).find(x=>list[x]);
+    const last=(list.lineend?.parents||[]).find(x=>list[x]);
+    if(first) $("start").value=first;
+    if(last) $("end").value=last;
+  }
+  $("toLeft").value="auto";
+  $("preview").textContent="{}";
+}
+function fillSelect(stations){
+  $("start").innerHTML=""; $("end").innerHTML="";
+  for(const [k,v] of stations){
+    const text=`${v.localisedName.zh} (${v.localisedName.en||"—"}) [${k}]`;
+    $("start").add(new Option(text,k)); $("end").add(new Option(text,k));
+  }
+}
+function findEndpoints(list){
+  return Object.entries(list).filter(([k,v])=>{
+    if(k==="linestart"||k==="lineend")return false;
+    const p=(v.parents||[]).filter(x=>list[x]&&x!=="linestart"&&x!=="lineend");
+    const c=(v.children||[]).filter(x=>list[x]&&x!=="linestart"&&x!=="lineend");
+    return p.length===0 || c.length===0;
+  }).map(x=>x[0]);
+}
+function walk(start,end,list){
+  // DFS：优先沿 children 前进；遇到分支会尝试所有路径。
+  const paths=[];
+  function dfs(k,path,seen){
+    if(seen.has(k))return;
+    if(k===end){paths.push([...path,k]);return;}
+    seen.add(k);
+    const children=(list[k]?.children||[]).filter(x=>list[x]&&x!=="linestart"&&x!=="lineend");
+    for(const n of children) dfs(n,[...path,k],new Set(seen));
+  }
+  dfs(start,[],new Set());
+  if(paths.length)return paths.sort((a,b)=>a.length-b.length)[0];
+  // 如果 children 方向走不到，允许利用 parents 反向走。
+  function dfs2(k,path,seen){
+    if(seen.has(k))return;
+    if(k===end){paths.push([...path,k]);return;}
+    seen.add(k);
+    const ns=[...(list[k]?.children||[]),...(list[k]?.parents||[])]
+      .filter(x=>list[x]&&x!=="linestart"&&x!=="lineend");
+    for(const n of [...new Set(ns)]) dfs2(n,[...path,k],new Set(seen));
+  }
+  dfs2(start,[],new Set());
+  if(paths.length)return paths.sort((a,b)=>a.length-b.length)[0];
+  return null;
+}
+function randomKey(){
+  const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  let s="";
+  for(let i=0;i<5;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+function uniqueKeys(n){
+  const s=new Set(); while(s.size<n)s.add(randomKey()); return [...s];
+}
+function getLineNumber(theme){
+  if(!Array.isArray(theme))return "";
+  const id=theme[1]||"";
+  const m=String(id).match(/(?:^|[^0-9])([0-9]+)$/);
+  return m?m[1]:"";
+}
+function getInterchanges(v){
+  const out=[];
+  const groups=v?.transfer?.groups||[];
+  for(const g of groups){
+    for(const line of (g?.lines||[])){
+      const t=line?.theme;
+      const num=getLineNumber(t);
+      const color=Array.isArray(t)?t[2]:"";
+      if(num && !out.some(x=>x[0]===num)) out.push([num,color||""]);
+    }
+  }
+  return out;
+}
+function convert(){
+  try{
+    if(!source)throw new Error("请先选择或粘贴 JSON。");
+    const list=source.stn_list;
+    const start=$("start").value, end=$("end").value;
+    if(!start||!end||start===end)throw new Error("请选择不同的起点和终点。");
+    const path=walk(start,end,list);
+    if(!path)throw new Error("从起点到终点找不到连通路径。请检查 parents/children，或交换起终点。");
+
+    const realPath=path.filter(k=>k!=="linestart"&&k!=="lineend");
+    const keys=uniqueKeys(realPath.length);
+    const stations={};
+
+    realPath.forEach((oldKey,i)=>{
+      const v=list[oldKey];
+      const name=v.localisedName||{};
+      const zh=name.zh||oldKey;
+      const en=name.en||$("defaultEn").value||"Station";
+      const item={
+        name:[zh,en],
+        id:String(i+1).padStart(2,"0")
+      };
+      if(i>0)item.back=[keys[i-1]];
+      if(i<realPath.length-1)item.next=[keys[i+1]];
+      item.key=keys[i];
+      const interchange=getInterchanges(v);
+      if(interchange.length)item.interchange=interchange;
+      stations[keys[i]]=item;
+    });
+
+    const lineName=$("lineName").value || source.line_name?.[0] || "未命名线路";
+    const color=$("lineColor").value || source.theme?.[2] || "#888888";
+    const toLeft=$("toLeft").value==="auto" ? source.direction==="l" : $("toLeft").value==="true";
+
+    result={
+      name:[lineName, source.line_name?.[1]||lineName],
+      color,
+      stations,
+      branches:[],
+      to_left:toLeft,
+      left_door:true,
+      a_width:600,
+      height:200,
+      b_width:600,
+      line_width:4,
+      a_top:50,
+      margin:70,
+      scale:2,
+      new:true,
+      color_next:true,
+      start:keys[0],
+      end:keys[keys.length-1],
+      selected:keys[0]
+    };
+    $("preview").textContent=JSON.stringify(result,null,2);
+    $("download").disabled=false;
+    $("status").textContent=`转换成功：${realPath.length} 个车站\n${realPath.map((k,i)=>`${i+1}. ${list[k].localisedName.zh}`).join("\n")}`;
+    $("status").className="status ok";
+  }catch(err){showErr(err.message);}
+}
+function showErr(msg){$("status").textContent=msg;$("status").className="status err";}
+$("input").addEventListener("input",()=>{
+  try{const d=JSON.parse($("input").value);load(d);}catch(e){}
+});
+$("convert").onclick=()=>{
+  if(!source && $("input").value.trim()){
+    try{load(JSON.parse($("input").value));}catch(e){showErr("JSON 解析失败："+e.message);return;}
+  }
+  convert();
+};
+$("download").onclick=()=>{
+  if(!result)return;
+  const blob=new Blob([JSON.stringify(result,null,2)],{type:"application/json;charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  const n=(result.name?.[0]||"converted").replace(/[\\/:*?"<>|]/g,"_");
+  a.download=n+"_转换.json"; a.click(); URL.revokeObjectURL(a.href);
+};
+</script>
+</body>
+</html>
